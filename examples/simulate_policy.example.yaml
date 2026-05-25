@@ -1,0 +1,35 @@
+# Defaults for ``scripts/simulate_policy.py`` (load with ``--config`` or rely on this path as the default).
+#
+# Paths: ``base_dir`` is joined with this file's directory (``examples/`` + ``..`` → repo root).
+# ``policy_file``, ``run_dir``, and ``video`` are resolved relative to that base unless absolute.
+#
+# Run (from repo root):
+#   python scripts/simulate_policy.py --config examples/simulate_policy.example.yaml
+# Override policy path:
+#   python scripts/simulate_policy.py --config examples/simulate_policy.example.yaml examples/task/base_rotation.py
+
+version: 1
+base_dir: ..
+
+policy_file: examples/task/base_rotation.py
+symbol: policy
+
+steps: 500
+episodes: 1
+rgb: false
+lift_z: 0.12
+strict: false
+
+# Output: set ``run_dir`` (bundle layout) or ``video`` (legacy single-file layout), not both.
+run_dir: artifacts/base_rotation
+video: null
+
+joint_log_interval: 1
+
+video_cell_h: 360
+video_cell_w: 426
+video_separator_frames: 12
+# null → use 1 / env.control_dt
+video_fps: null
+
+no_overview_traces: false

@@ -1,0 +1,9 @@
+{
+  "video": "/Users/ikatsov/PROJECTS/robotic-dev-agent/artifacts/my_run/rollout.mp4",
+  "metrics_file": "/Users/ikatsov/PROJECTS/robotic-dev-agent/artifacts/my_run/metrics.txt",
+  "joints_csv": "/Users/ikatsov/PROJECTS/robotic-dev-agent/artifacts/my_run/joints.csv",
+  "task_spec_configured": true,
+  "task_spec_chars": 531,
+  "metrics_file_exists": true,
+  "joints_csv_exists": true
+}

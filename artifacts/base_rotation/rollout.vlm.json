@@ -1,0 +1,34 @@
+{
+  "pass": true,
+  "summary_task_agnostic": "The video shows a robot arm performing a continuous, smooth counter-clockwise rotation of its base joint. All other joints remain completely static in their initial configuration. The 2x2 grid displays perspective and wrist RGB and depth views correctly.",
+  "summary_task_evaluation": "The task is fully successful. The robot base rotates smoothly and continuously by more than 180 degrees about the vertical axis. All other joints and the gripper remain strictly in their home configuration throughout the entire clip, with no collisions or chaotic movements.",
+  "second_by_second_neutral": [
+    "The robot base begins a slow counter-clockwise rotation. All other joints remain static in their home configuration.",
+    "The robot base continues its smooth counter-clockwise rotation, with colored tracking lines visible in the overview.",
+    "The base rotation continues smoothly. The wrist camera view shows a static dark block in its frame.",
+    "The base continues rotating counter-clockwise. No other joints show any movement.",
+    "The base continues its steady rotation. The orange box on the floor remains undisturbed.",
+    "The base continues rotating. The arm has now rotated more than 90 degrees from its starting position.",
+    "The base continues its smooth rotation. The other joints remain completely locked in place.",
+    "The base continues rotating, approaching 180 degrees of rotation.",
+    "The base continues rotating, passing the 180-degree mark.",
+    "The base continues rotating smoothly.",
+    "The base rotation continues smoothly until the video ends, completing well over 180 degrees of rotation."
+  ],
+  "second_by_second_task": [
+    "On task: Only the robot base rotates slowly, while other joints remain in their home configuration.",
+    "On task: Smooth base rotation continues with no movement in other joints.",
+    "On task: Base rotation continues smoothly; other joints remain static.",
+    "On task: Steady base rotation continues, adhering to the single-joint rotation requirement.",
+    "On task: Base rotation continues smoothly without any articulation of other joints.",
+    "On task: Base rotation continues, making steady progress toward the 180-degree goal.",
+    "On task: Base rotation continues smoothly; other joints remain locked.",
+    "On task: Base rotation continues, approaching the 180-degree threshold.",
+    "On task: Base rotation passes 180 degrees, successfully meeting the primary goal.",
+    "On task: Base rotation continues smoothly beyond 180 degrees.",
+    "On task: Base rotation continues smoothly until the end of the clip, exceeding the 180-degree requirement."
+  ],
+  "issues": [],
+  "panels_ok": true,
+  "motion_controlled": true
+}

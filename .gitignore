@@ -1,0 +1,18 @@
+# Secrets / local env
+.env
+.env.local
+.env.*.local
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Media / local artifacts
+*.mp4
+
+# Optional local clone (meshes are vendored under mjcf/menagerie_ur5e/)
+third_party/mujoco_menagerie/

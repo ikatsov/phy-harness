@@ -1,0 +1,6 @@
+Universal Robots UR5e MJCF and mesh assets are from the DeepMind MuJoCo Menagerie project:
+https://github.com/google-deepmind/mujoco_menagerie/tree/main/universal_robots_ur5e
+
+License: see MENAGERIE_LICENSE (Apache-2.0).
+
+This vendored copy is trimmed (no stock actuators/keyframe) and extended with a **Robotiq 2F-85** adaptive gripper (MuJoCo Menagerie ``robotiq_2f85_v4``, see ``ROBOTIQ_2F85_LICENSE``) and wrist camera in ``ur5e_robot.xml``.

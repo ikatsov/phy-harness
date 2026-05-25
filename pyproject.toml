@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robot-manipulation-sim"
+version = "0.1.0"
+description = "MuJoCo Universal Robots UR5e + Robotiq 2F-85 gripper harness for manipulation task development"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "mujoco>=3.1.0",
+  "numpy>=1.24",
+  "imageio>=2.31",
+  "imageio-ffmpeg>=0.4",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "ruff>=0.4"]
+vlm = ["google-generativeai>=0.8.0", "google-genai>=1.0", "pillow>=10.0", "python-dotenv>=1.0"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+robot_manipulation_sim = ["mjcf/**/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

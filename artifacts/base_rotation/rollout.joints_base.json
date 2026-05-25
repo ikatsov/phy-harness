@@ -1,0 +1,41 @@
+{
+  "analyzer": "joints_csv_base_rotation",
+  "pass": true,
+  "summary_task_agnostic": "Rows=501 t=[0.00,10.00]s; net pan=6.2831rad; max non-pan excursion from t0=0.0310rad; seconds=11. Columns: pan+shoulder_lift_joint,elbow_joint,wrist_1_joint,wrist_2_joint,wrist_3_joint.",
+  "summary_task_evaluation": "Base-rotation rubric (joints only): net |pan|=6.283 rad (need >= 0.150); max non-pan |q-q0(t0)|=0.031 rad (limit 0.120). Task text excerpt: 'Primary goal: The arm must rotate at least 180 degrees around the robot base.\\nRequirements: Only the robot base (shoulder pan) should rotate slowly about the vertical axis.\\nAll other arm joints and th'...",
+  "second_by_second_neutral": [
+    "pan[0.0000,0.5348] d=0.5348rad; shoulder_lift_d=0.0310; elbow_d=0.0190; wrist_1_d=0.0160; wrist_2_d=0.0029; wrist_3_d=0.0038; grip_d=0.00006m",
+    "pan[0.5487,1.3063] d=0.7577rad; shoulder_lift_d=0.0058; elbow_d=0.0120; wrist_1_d=0.0123; wrist_2_d=0.0035; wrist_3_d=0.0043; grip_d=0.00002m",
+    "pan[1.3212,2.0355] d=0.7142rad; shoulder_lift_d=0.0095; elbow_d=0.0160; wrist_1_d=0.0138; wrist_2_d=0.0040; wrist_3_d=0.0051; grip_d=0.00003m",
+    "pan[2.0517,2.8057] d=0.7540rad; shoulder_lift_d=0.0067; elbow_d=0.0114; wrist_1_d=0.0109; wrist_2_d=0.0041; wrist_3_d=0.0050; grip_d=0.00002m",
+    "pan[2.8206,3.5610] d=0.7404rad; shoulder_lift_d=0.0065; elbow_d=0.0126; wrist_1_d=0.0114; wrist_2_d=0.0031; wrist_3_d=0.0038; grip_d=0.00002m",
+    "pan[3.5760,4.3254] d=0.7494rad; shoulder_lift_d=0.0078; elbow_d=0.0148; wrist_1_d=0.0107; wrist_2_d=0.0029; wrist_3_d=0.0032; grip_d=0.00002m",
+    "pan[4.3413,5.0654] d=0.7241rad; shoulder_lift_d=0.0076; elbow_d=0.0132; wrist_1_d=0.0192; wrist_2_d=0.0049; wrist_3_d=0.0045; grip_d=0.00003m",
+    "pan[5.0793,5.8252] d=0.7458rad; shoulder_lift_d=0.0085; elbow_d=0.0165; wrist_1_d=0.0151; wrist_2_d=0.0046; wrist_3_d=0.0054; grip_d=0.00002m",
+    "pan[5.8397,6.2883] d=0.4485rad; shoulder_lift_d=0.0070; elbow_d=0.0141; wrist_1_d=0.0095; wrist_2_d=0.0020; wrist_3_d=0.0050; grip_d=0.00005m",
+    "pan[6.2830,6.2831] d=0.0001rad; shoulder_lift_d=0.0011; elbow_d=0.0023; wrist_1_d=0.0016; wrist_2_d=0.0006; wrist_3_d=0.0016; grip_d=0.00000m",
+    "pan[6.2831,6.2831] d=0.0000rad; grip_d=0.00000m; box_z_d=0.0000m"
+  ],
+  "second_by_second_task": [
+    "OK slice: pan_d=0.5348rad arm_span=0.0310rad",
+    "OK slice: pan_d=0.7577rad arm_span=0.0123rad",
+    "OK slice: pan_d=0.7142rad arm_span=0.0160rad",
+    "OK slice: pan_d=0.7540rad arm_span=0.0114rad",
+    "OK slice: pan_d=0.7404rad arm_span=0.0126rad",
+    "OK slice: pan_d=0.7494rad arm_span=0.0148rad",
+    "OK slice: pan_d=0.7241rad arm_span=0.0192rad",
+    "OK slice: pan_d=0.7458rad arm_span=0.0165rad",
+    "OK slice: pan_d=0.4485rad arm_span=0.0141rad",
+    "WARN slice: little pan motion (d=0.0001rad)",
+    "WARN slice: little pan motion (d=0.0000rad)"
+  ],
+  "issues": [],
+  "checks": {
+    "pan_net_rad": 6.283102053270165,
+    "min_pan_total_rad": 0.15,
+    "max_non_pan_excursion_rad": 0.030983159678878002,
+    "home_max_excursion_rad": 0.12,
+    "home_max_span_per_s": 0.06,
+    "any_slice_fail": false
+  }
+}
