@@ -1,6 +1,6 @@
-# Robotic manipulation dev harness (MuJoCo)
+# Robotic manipulation dev harness
 
-Python harness for **Universal Robots UR5e** simulation with a **Robotiq 2F-85** adaptive gripper (tendon drive, **0–255** ctrl), **RGB cameras**, and a validation loop for task policies (e.g. grasp, touch, lift). The overall policy developmet loop is as follows:
+Python harness for **Universal Robots UR5e** simulation with a **Robotiq 2F-85** adaptive gripper (tendon drive, **0–255** ctrl), **RGB cameras**, and a validation loop for task policies (e.g. grasp, touch, lift). This harness is then used by the coding skill to implemnet the following development loop:
 
 ```
   ┌─────────────────────────────────────────────────────────────────┐
@@ -70,12 +70,6 @@ Create a **task bundle** at `policies/impl/<task>/`:
 
 The agent edits **only** that bundle and its test—not `src/`, `scripts/`, shared example YAMLs (except setting **`task:`** in `policies/validation.example.yaml`), or other tasks’ bundles.
 
-### Policy expectations
-
-Policies should be built from **robust primitives** (Jacobian IK, camera-based perception, closed-loop state), not long hand-tuned joint playlists. Work **incrementally**: one module at a time, with **task-local analyzers** (e.g. on `joints.csv`) that check one concern before composing the full stack.
-
-Full workflow, boundaries, and artifact details: [`.cursor/skills/robotics-devagent/SKILL.md`](.cursor/skills/robotics-devagent/SKILL.md) and [`.cursor/skills/robotics-devagent/reference.md`](.cursor/skills/robotics-devagent/reference.md).
-
 ### Canonical loop (per task)
 
 From the repo root with the venv active:
@@ -97,15 +91,6 @@ python scripts/validate_rollout.py --config policies/validation.example.yaml
 **Validate:** only change **`task:`** in `policies/validation.example.yaml`; do not fork per-task validation YAMLs.
 
 **Outputs** under `artifacts/<task>/`: `rollout.mp4`, `metrics.txt`, `joints.csv`, `rollout.*.json` (task analyzers), `rollout.vlm.json` (when VLM is enabled).
-
-## Policies (harness scripts)
-
-Policies are plain Python: `policy(obs, step, env)` returns a length-`env.nu` control vector.
-
-- **Simulate:** `scripts/simulate_policy.py` (defaults in `policies/simulate_policy.example.yaml`).
-- **Validate:** `scripts/validate_rollout.py` with `policies/validation.example.yaml` and **`task: <task>`** loads `policies/impl/<task>/<task>.yaml`, merges generic analyzers from the main config with **`task_analyzers`**, and writes JSON next to `rollout.mp4`.
-
-Success criteria live in **`task_spec.inline`** in the task YAML; compare analyzer JSON and `rollout.vlm.json` after validation.
 
 ## Third-party assets
 
