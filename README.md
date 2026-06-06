@@ -1,6 +1,8 @@
-# Robotic manipulation dev harness
+# PhyHarness - A Dev Harness for Physical AI
 
-Python harness for **Universal Robots UR5e** simulation with a **Robotiq 2F-85** adaptive gripper (tendon drive, **0–255** ctrl), multi-view rollout video with overlays, joints logging, and analyzer support for task policy development.
+Python harness for agentic development of embodied control policies using perception-less motion control, computer vision, and motion generation models.
+
+Project website: [ikatsov.github.io/phy-harness](https://ikatsov.github.io/phy-harness/)
 
 The current development workflow is:
 
@@ -82,9 +84,7 @@ pytest -q tests/test_<task>.py
 python scripts/simulate_policy.py --config policies/simulate_policy.example.yaml \
   policies/impl/<task>/<task>.py --run-dir artifacts/<task>
 
-# 3 — Re-run after code/analyzer/test updates
-# python scripts/simulate_policy.py --config policies/simulate_policy.example.yaml \
-#   policies/impl/<task>/<task>.py --run-dir artifacts/<task>
+# 3 — Coding agent analyzes the simulation outputs and makes changes
 ```
 
 **Design & implement:** done in policy/analyzer/test files for the task.

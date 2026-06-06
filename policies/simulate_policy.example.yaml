@@ -5,7 +5,7 @@ version: 1
 base_dir: ..
 
 # Main task name. Policy path defaults to policies/impl/<task>/<task>.py.
-task: box_pick
+task: path_tracing
 
 # Number of control steps to run.
 steps: 650

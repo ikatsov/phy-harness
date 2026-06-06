@@ -3,310 +3,719 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Robotic Manipulation Dev Harness</title>
-    <meta
-      name="description"
-      content="UR5e + Robotiq simulation harness for iterative policy development with simulation artifacts, analyzers, and coding feedback loops."
-    />
+    <title>PhyHarness - A Dev Harness for Physical AI</title>
+    <meta name="description" content="UR5e + Robotiq simulation harness for iterative policy development with simulation artifacts, analyzers, and coding feedback loops." />
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
       :root {
-        --bg: #0b1020;
-        --bg-soft: #121a33;
-        --card: #121a2b;
-        --card-2: #17233a;
-        --text: #e6ecff;
-        --muted: #a8b3d4;
-        --accent: #6ee7ff;
-        --accent-2: #93c5fd;
-        --ok: #86efac;
-        --warn: #fcd34d;
-        --border: #233253;
-        --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        --bg:       #07101f;
+        --surface:  #0d1a2e;
+        --card:     #0f1f36;
+        --card-hi:  #152844;
+        --border:   rgba(99,160,255,0.18);
+        --border-hi:rgba(99,160,255,0.45);
+        --text:     #dce8ff;
+        --muted:    #7a9acc;
+        --dim:      #4a6490;
+        --accent:   #4db8ff;
+        --accent2:  #a78bfa;
+        --green:    #34d399;
+        --glow:     rgba(77,184,255,0.15);
+        --glow2:    rgba(167,139,250,0.12);
       }
 
-      * {
-        box-sizing: border-box;
-      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      html,
+      html { scroll-behavior: smooth; }
+
       body {
-        margin: 0;
-        padding: 0;
-        font-family:
-          Inter,
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          Segoe UI,
-          Roboto,
-          Helvetica,
-          Arial,
-          sans-serif;
-        background: radial-gradient(1200px 800px at 10% -10%, #1f2c4b 0%, var(--bg) 55%);
+        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        background: var(--bg);
         color: var(--text);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
       }
 
-      .container {
-        width: min(1160px, 92vw);
-        margin: 0 auto;
-      }
+      /* ── layout ── */
+      .page { width: min(1140px, 94vw); margin: 0 auto; }
 
+      /* ── hero ── */
       .hero {
-        padding: 56px 0 30px;
+        padding: 64px 0 44px;
+        background: radial-gradient(900px 500px at 30% -10%, rgba(77,184,255,0.08) 0%, transparent 65%);
       }
 
-      .badge {
-        display: inline-block;
-        padding: 6px 12px;
-        border: 1px solid var(--border);
+      .tag {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--border-hi);
         border-radius: 999px;
+        padding: 5px 14px;
         color: var(--accent);
-        background: rgba(110, 231, 255, 0.08);
-        font-size: 12px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+        font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
+        background: rgba(77,184,255,0.06);
       }
 
       h1 {
-        margin: 16px 0 10px;
-        font-size: clamp(30px, 5vw, 52px);
+        margin: 18px 0 12px;
+        font-size: clamp(32px, 5vw, 56px);
+        font-weight: 700;
+        letter-spacing: -0.03em;
         line-height: 1.04;
-        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #e8f0ff 30%, #7dc4ff 70%, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
-      .subtitle {
-        color: var(--muted);
-        max-width: 900px;
-        font-size: clamp(16px, 2vw, 19px);
-      }
-
-      .grid {
-        display: grid;
-        gap: 16px;
-      }
-
-      .workflow {
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-        margin: 24px 0 20px;
-      }
-
-      .card {
-        background: linear-gradient(180deg, var(--card), var(--card-2));
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 16px;
-        box-shadow: var(--shadow);
-      }
-
-      .card h3 {
-        margin: 0 0 8px;
-        font-size: 16px;
-      }
-
-      .card p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.45;
-        font-size: 14px;
-      }
-
-      .section {
-        margin: 26px 0 34px;
-      }
-
-      .section h2 {
-        margin: 0 0 14px;
-        font-size: clamp(22px, 3vw, 30px);
-        letter-spacing: -0.01em;
-      }
-
-      .hl {
-        color: var(--accent-2);
-      }
-
-      .two-col {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 14px;
-      }
-
-      ul {
-        margin: 8px 0 0;
-        padding-left: 20px;
-        color: var(--muted);
-      }
-
-      li {
-        margin: 6px 0;
-      }
-
-      .video-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-        gap: 18px;
-      }
-
-      .video-card {
-        background: linear-gradient(180deg, #111a2a, #0e1626);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 12px;
-        box-shadow: var(--shadow);
-      }
-
-      .video-card h3 {
-        margin: 2px 0 10px;
-        font-size: 16px;
-      }
-
-      .video-card p {
-        margin: 10px 0 0;
-        color: var(--muted);
-        font-size: 13px;
-      }
-
-      video {
+      .hero-title-main {
         display: block;
-        width: 100%;
-        border-radius: 10px;
-        background: #000;
       }
 
-      .footer {
-        border-top: 1px solid var(--border);
-        margin-top: 36px;
-        padding: 18px 0 40px;
+      .hero-title-sub {
+        display: block;
+        margin-top: 8px;
+        font-size: clamp(16px, 2.2vw, 24px);
+        font-weight: 500;
+        letter-spacing: -0.01em;
         color: var(--muted);
-        font-size: 13px;
+        -webkit-text-fill-color: initial;
+        background: none;
       }
 
-      a {
-        color: var(--accent);
+      .hero p {
+        max-width: 720px;
+        color: var(--muted);
+        font-size: clamp(15px, 2vw, 18px);
+        font-weight: 400;
       }
 
-      .kicker {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 12px;
-      }
+      .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 
       .pill {
         border: 1px solid var(--border);
         border-radius: 999px;
-        padding: 5px 10px;
-        font-size: 12px;
+        padding: 5px 12px;
+        font-size: 12px; font-weight: 500;
         color: var(--muted);
-        background: rgba(255, 255, 255, 0.02);
+        background: rgba(255,255,255,0.025);
+      }
+
+      /* ── section headers ── */
+      section { padding: 16px 0 36px; }
+
+      .section-label {
+        font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--accent); margin-bottom: 8px;
+      }
+
+      h2 {
+        font-size: clamp(22px, 3vw, 32px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 28px;
+      }
+
+      /* ── workflow diagram ── */
+      .wf-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 40px 36px 92px;
+        position: relative;
+        overflow: hidden;
+        --wf-gap: 52px;
+      }
+
+      .wf-wrap::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(800px 400px at 50% -60%, rgba(77,184,255,0.07) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      /* forward row */
+      .wf-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        align-items: stretch;
+        gap: var(--wf-gap);
+        position: relative;
+      }
+
+      /* stage card */
+      .wf-stage {
+        flex: 1;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px 18px 18px;
+        position: relative;
+        transition: border-color .25s, box-shadow .25s;
+      }
+
+      .wf-stage:hover {
+        border-color: var(--border-hi);
+        box-shadow: 0 0 28px var(--glow);
+      }
+
+      .wf-num {
+        display: inline-block;
+        font-size: 11px; font-weight: 700; letter-spacing: .08em;
+        color: var(--accent);
+        background: rgba(77,184,255,0.1);
+        border: 1px solid rgba(77,184,255,0.25);
+        border-radius: 999px;
+        padding: 2px 9px;
+        margin-bottom: 10px;
+      }
+
+      .wf-stage h3 {
+        font-size: 15px; font-weight: 600;
+        color: #e8f0ff;
+        margin-bottom: 8px;
+      }
+
+      .wf-stage p {
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .wf-stage code {
+        font-family: 'SF Mono', ui-monospace, monospace;
+        font-size: 11px;
+        color: var(--accent);
+        background: rgba(77,184,255,0.08);
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
+
+      .wf-overlay {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .wf-row {
+        z-index: 1;
+      }
+
+      .wf-path-main {
+        stroke: rgba(103, 169, 255, 0.72);
+        stroke-width: 2;
+        fill: none;
+        stroke-linecap: round;
+      }
+
+      .wf-path-loop {
+        stroke: rgba(166, 139, 246, 0.62);
+        stroke-width: 2;
+        fill: none;
+        stroke-linecap: round;
+      }
+
+      .wf-impulse-main {
+        fill: #4db8ff;
+      }
+
+      .wf-impulse-loop {
+        fill: #a78bfa;
+      }
+
+      .wf-loop-text {
+        position: absolute;
+        font-size: 11.5px;
+        color: var(--accent2);
+        font-weight: 500;
+        letter-spacing: .01em;
+        z-index: 1;
+      }
+
+      .wf-caption {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--dim);
+        text-align: center;
+      }
+
+      /* ── two-col cards ── */
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px 22px 20px;
+        transition: border-color .25s, box-shadow .25s;
+      }
+
+      .card:hover {
+        border-color: var(--border-hi);
+        box-shadow: 0 0 22px var(--glow);
+      }
+
+      .card h3 {
+        font-size: 15px; font-weight: 600;
+        color: #e8f0ff;
+        margin-bottom: 12px;
+      }
+
+      .card ul {
+        padding-left: 18px;
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+
+      .card li { margin: 7px 0; }
+
+      .card code {
+        font-family: 'SF Mono', ui-monospace, monospace;
+        font-size: 11.5px;
+        color: var(--accent);
+        background: rgba(77,184,255,0.08);
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
+
+      /* ── use-case video cards ── */
+      .usecase-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 22px;
+      }
+
+      .usecase-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 16px 18px;
+        transition: border-color .25s, box-shadow .25s;
+      }
+
+      .usecase-card:hover {
+        border-color: var(--border-hi);
+        box-shadow: 0 0 22px var(--glow);
+      }
+
+      .usecase-head {
+        margin-bottom: 12px;
+      }
+
+      .usecase-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #d9e7ff;
+      }
+
+      .usecase-desc {
+        margin-top: 8px;
+        font-size: 12.8px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .usecase-desc code {
+        font-family: 'SF Mono', ui-monospace, monospace;
+        font-size: 11px;
+        color: var(--accent);
+        background: rgba(77,184,255,0.08);
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
+
+      .carousel {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.01);
+        overflow: hidden;
+      }
+
+      .carousel-stage {
+        position: relative;
+      }
+
+      .carousel-slide {
+        display: none;
+        padding: 10px;
+      }
+
+      .carousel-slide.active {
+        display: block;
+      }
+
+      .slide-label {
+        font-size: 12px;
+        color: #bfd3ff;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .carousel-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 10px;
+        border-top: 1px solid var(--border);
+        background: rgba(255,255,255,0.015);
+      }
+
+      .carousel-btn {
+        border: 1px solid var(--border);
+        background: #12213a;
+        color: var(--text);
+        border-radius: 8px;
+        width: 34px;
+        height: 28px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .carousel-btn:hover {
+        border-color: var(--border-hi);
+      }
+
+      .carousel-meta {
+        font-size: 11.5px;
+        color: var(--dim);
+      }
+
+      video {
+        display: block; width: 100%;
+        border-radius: 10px;
+        background: #000;
+      }
+
+      .usecase-file {
+        display: block;
+        margin-top: 10px;
+        font-size: 11.5px;
+        color: var(--dim);
+      }
+
+      .usecase-card a { color: var(--accent); text-decoration: none; }
+      .usecase-card a:hover { text-decoration: underline; }
+
+      .hl { color: var(--accent); }
+
+      /* ── footer ── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 20px 0 44px;
+        color: var(--dim);
+        font-size: 12px;
+      }
+      footer a { color: var(--muted); }
+
+      a { color: var(--accent); }
+
+      /* ── responsive ── */
+      @media (max-width: 820px) {
+        .wf-row  { grid-template-columns: 1fr; gap: 10px; }
+        .wf-overlay, .wf-loop-text { display: none; }
+        .wf-wrap { padding: 28px 20px 20px; }
       }
     </style>
   </head>
   <body>
-    <main class="container">
+    <main class="page">
+
+      <!-- hero -->
       <section class="hero">
-        <span class="badge">UR5e + Robotiq 2F-85</span>
-        <h1>Robotic Manipulation Dev Harness</h1>
-        <p class="subtitle">
-          A practical simulation workflow for building and debugging robot manipulation policies with
-          augmented rollout videos, joint logs, VLM transcripts, and task analyzers.
-        </p>
-        <div class="kicker">
+        <h1>
+          <span class="hero-title-main">PhyHarness</span>
+          <span class="hero-title-sub">A Dev Harness for Physical AI</span>
+        </h1>
+        <p>A practical simulation workflow for building and debugging robot manipulation policies with augmented rollout videos, joint logs, VLM transcripts, and task analyzers.</p>
+        <div class="pills">
           <span class="pill">MuJoCo simulation</span>
           <span class="pill">Policy iteration loop</span>
           <span class="pill">Analyzer-driven debugging</span>
           <span class="pill">Video + logs + transcripts</span>
+          <span class="pill">IK motion planning</span>
         </div>
       </section>
 
-      <section class="section">
+      <!-- workflow -->
+      <section>
+        <div class="section-label">Development loop</div>
         <h2>High-level workflow</h2>
-        <div class="grid workflow">
-          <article class="card">
-            <h3>1) Inputs</h3>
-            <p>
-              Start from <code>policies/impl/&lt;task&gt;/&lt;task&gt;.yaml</code> with task intent and policy
-              wiring.
-            </p>
-          </article>
-          <article class="card">
-            <h3>2) Design &amp; implement</h3>
-            <p>
-              Coding model (or developer) updates policy code, analyzers, and focused tests for the task.
-            </p>
-          </article>
-          <article class="card">
-            <h3>3) Simulate</h3>
-            <p>
-              Run simulation to generate augmented rollout video, <code>joints.csv</code>, metrics, VLM
-              transcript JSON, and custom analyzer outputs.
-            </p>
-          </article>
-          <article class="card">
-            <h3>4) Coding feedback loop</h3>
-            <p>
-              Inspect video frames and logs, tighten analyzers and tests, implement fixes, then repeat from
-              design.
-            </p>
-          </article>
+        <div class="wf-wrap">
+          <svg class="wf-overlay" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path id="wf-p12" class="wf-path-main" d="" />
+            <path id="wf-p23" class="wf-path-main" d="" />
+            <path id="wf-p34" class="wf-path-main" d="" />
+            <path id="wf-ploop" class="wf-path-loop" d="" />
+
+            <circle class="wf-impulse-main" r="3">
+              <animateMotion dur="2.2s" repeatCount="indefinite">
+                <mpath href="#wf-p12"></mpath>
+              </animateMotion>
+            </circle>
+            <circle class="wf-impulse-main" r="3">
+              <animateMotion dur="2.2s" begin="0.7s" repeatCount="indefinite">
+                <mpath href="#wf-p23"></mpath>
+              </animateMotion>
+            </circle>
+            <circle class="wf-impulse-main" r="3">
+              <animateMotion dur="2.2s" begin="1.4s" repeatCount="indefinite">
+                <mpath href="#wf-p34"></mpath>
+              </animateMotion>
+            </circle>
+            <circle class="wf-impulse-loop" r="3">
+              <animateMotion dur="4.2s" repeatCount="indefinite">
+                <mpath href="#wf-ploop"></mpath>
+              </animateMotion>
+            </circle>
+          </svg>
+
+          <div class="wf-row">
+            <div class="wf-stage" data-stage="inputs">
+              <div class="wf-num">01</div>
+              <h3>Inputs</h3>
+              <p>Define intent in a task YAML spec.<br><code>&lt;task&gt;.yaml</code> under<br><code>policies/impl/&lt;task&gt;/</code></p>
+            </div>
+            <div class="wf-stage" data-stage="design">
+              <div class="wf-num">02</div>
+              <h3>Design &amp; implement</h3>
+              <p>Coding model implements policy, analyzers, and unit tests for the task.</p>
+            </div>
+            <div class="wf-stage" data-stage="simulate">
+              <div class="wf-num">03</div>
+              <h3>Simulate</h3>
+              <p>Produces <code>rollout.mp4</code>, <code>joints.csv</code>, metrics, VLM transcript, and custom analyzer outputs.</p>
+            </div>
+            <div class="wf-stage" data-stage="feedback">
+              <div class="wf-num">04</div>
+              <h3>Redesign</h3>
+              <p>Inspect video frames, logs, and transcripts. Run ad hoc test and simulation. Design fixes.</p>
+            </div>
+          </div>
+
+          <span class="wf-loop-text">Loop back to design &amp; implement</span>
         </div>
       </section>
 
-      <section class="section">
+      <!-- artifacts -->
+      <section>
+        <div class="section-label">Outputs</div>
         <h2>Core artifacts</h2>
         <div class="two-col">
-          <article class="card">
+          <div class="card">
             <h3>Simulation outputs</h3>
             <ul>
-              <li><code>artifacts/&lt;task&gt;/rollout.mp4</code> (augmented 2x2 view)</li>
-              <li><code>artifacts/&lt;task&gt;/metrics.txt</code></li>
-              <li><code>artifacts/&lt;task&gt;/joints.csv</code> with target vs applied controls</li>
-              <li><code>rollout.vlm_transcript.json</code> when VLM transcriber is enabled</li>
-              <li>Optional task-specific analyzer JSON files</li>
+              <li><code>rollout.mp4</code> — augmented 4-camera 2×2 grid with kinematic overlays</li>
+              <li><code>joints.csv</code> — joint qpos + target vs applied controls per step</li>
+              <li><code>metrics.txt</code> — episode summary</li>
+              <li><code>rollout.vlm_transcript.json</code> — per-frame VLM descriptions when enabled</li>
+              <li>Custom analyzer JSON files per task</li>
             </ul>
-          </article>
-          <article class="card">
+          </div>
+          <div class="card">
             <h3>Why this loop works</h3>
             <ul>
-              <li>Visual evidence catches control/physics pathologies fast</li>
+              <li>Visual evidence catches control/physics pathologies immediately</li>
               <li>Joint logs make hypotheses testable and repeatable</li>
-              <li>Analyzers convert observations into structured signals</li>
-              <li>Focused tests prevent regressions while iterating quickly</li>
+              <li>VLM transcripts describe each sampled frame in natural language</li>
+              <li>Custom analyzers convert observations into structured signals</li>
+              <li>Focused tests prevent regressions during iteration</li>
             </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- videos -->
+      <section>
+        <div class="section-label">Example rollouts by use case</div>
+        <h2>Policy in action</h2>
+        <div class="usecase-grid">
+          <article class="usecase-card">
+            <div class="usecase-head">
+              <h3 class="usecase-title">Box Pick</h3>
+              <p class="usecase-desc">
+                <strong>Primary goal:</strong> pick the orange box from above and place it at a different table
+                location. Uses topdown color detection and an 8-phase IK plan
+                (crane → approach → descend → grip → lift → transport → lower → release) from
+                <code>policies/impl/box_pick/box_pick.yaml</code>.
+              </p>
+            </div>
+            <div class="carousel" data-carousel>
+              <div class="carousel-stage">
+                <div class="carousel-slide active" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 1:</span> generated policy with control/physics issue</div>
+                  <video controls preload="metadata">
+                    <source src="./box_pick_rollout_001.mp4" type="video/mp4" />
+                    <source src="./docs/box_pick_rollout_001.mp4" type="video/mp4" />
+                    <a href="./box_pick_rollout_001.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./box_pick_rollout_001.mp4">box_pick_rollout_001.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 2:</span> updated policy after investigation and fix</div>
+                  <video controls preload="metadata">
+                    <source src="./box_pick_rollout_002.mp4" type="video/mp4" />
+                    <source src="./docs/box_pick_rollout_002.mp4" type="video/mp4" />
+                    <a href="./box_pick_rollout_002.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./box_pick_rollout_002.mp4">box_pick_rollout_002.mp4</a></small>
+                </div>
+              </div>
+              <div class="carousel-controls">
+                <button class="carousel-btn" type="button" data-prev aria-label="Previous video">◀</button>
+                <span class="carousel-meta" data-meta>1 / 2</span>
+                <button class="carousel-btn" type="button" data-next aria-label="Next video">▶</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="usecase-card">
+            <div class="usecase-head">
+              <h3 class="usecase-title">Cube Tracing</h3>
+              <p class="usecase-desc">
+                <strong>Primary goal:</strong> trace the 12 edges of a virtual cube in the air with the gripper tip.
+                Uses a two-phase precomputed IK trajectory (approach + connected 16-segment cube-edge trace) from
+                <code>policies/impl/path_tracing/path_tracing.yaml</code>.
+              </p>
+            </div>
+            <div class="carousel" data-carousel>
+              <div class="carousel-stage">
+                <div class="carousel-slide active" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 1:</span> cube tracing with shaking issue</div>
+                  <video controls preload="metadata">
+                    <source src="./cube_tracing_rollout_001.mp4" type="video/mp4" />
+                    <source src="./docs/cube_tracing_rollout_001.mp4" type="video/mp4" />
+                    <a href="./cube_tracing_rollout_001.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./cube_tracing_rollout_001.mp4">cube_tracing_rollout_001.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 2:</span> smooth cube tracing motion</div>
+                  <video controls preload="metadata">
+                    <source src="./cube_tracing_rollout_002.mp4" type="video/mp4" />
+                    <source src="./docs/cube_tracing_rollout_002.mp4" type="video/mp4" />
+                    <a href="./cube_tracing_rollout_002.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./cube_tracing_rollout_002.mp4">cube_tracing_rollout_002.mp4</a></small>
+                </div>
+              </div>
+              <div class="carousel-controls">
+                <button class="carousel-btn" type="button" data-prev aria-label="Previous video">◀</button>
+                <span class="carousel-meta" data-meta>1 / 2</span>
+                <button class="carousel-btn" type="button" data-next aria-label="Next video">▶</button>
+              </div>
+            </div>
           </article>
         </div>
       </section>
 
-      <section class="section">
-        <h2>Box-pick rollout examples</h2>
-        <div class="video-grid">
-          <article class="video-card">
-            <h3><span class="hl">Issue case:</span> generated policy with control/physics problem</h3>
-            <video controls preload="metadata">
-              <source src="./box_pick_rollout_001.mp4" type="video/mp4" />
-              Your browser does not support embedded video. Use
-              <a href="./box_pick_rollout_001.mp4">this link</a>.
-            </video>
-            <p>
-              Reference file: <a href="./box_pick_rollout_001.mp4"><code>docs/box_pick_rollout_001.mp4</code></a>
-            </p>
-          </article>
-          <article class="video-card">
-            <h3><span class="hl">Resolved case:</span> updated policy after investigation and fix</h3>
-            <video controls preload="metadata">
-              <source src="./box_pick_rollout_002.mp4" type="video/mp4" />
-              Your browser does not support embedded video. Use
-              <a href="./box_pick_rollout_002.mp4">this link</a>.
-            </video>
-            <p>
-              Reference file: <a href="./box_pick_rollout_002.mp4"><code>docs/box_pick_rollout_002.mp4</code></a>
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <footer class="footer">
-        Source repository README and workflow details: <a href="../README.md">README.md</a>
-      </footer>
     </main>
+
+    <footer>
+      <div class="page">
+        Source and docs: <a href="https://github.com/ikatsov/phy-harness">github.com/ikatsov/phy-harness</a>
+        &nbsp;·&nbsp;
+        <a href="../README.md">README</a>
+      </div>
+    </footer>
+
+    <script>
+      (() => {
+        const syncWorkflowDiagram = () => {
+          const wrap = document.querySelector('.wf-wrap');
+          const overlay = wrap?.querySelector('.wf-overlay');
+          const design = wrap?.querySelector('[data-stage="design"]');
+          const inputs = wrap?.querySelector('[data-stage="inputs"]');
+          const simulate = wrap?.querySelector('[data-stage="simulate"]');
+          const feedback = wrap?.querySelector('[data-stage="feedback"]');
+          const loopText = wrap?.querySelector('.wf-loop-text');
+          if (!wrap || !overlay || !inputs || !design || !simulate || !feedback || !loopText) return;
+
+          const wrapRect = wrap.getBoundingClientRect();
+          const iRect = inputs.getBoundingClientRect();
+          const designRect = design.getBoundingClientRect();
+          const sRect = simulate.getBoundingClientRect();
+          const feedbackRect = feedback.getBoundingClientRect();
+
+          // Keep SVG coordinate system in pixel space with measured DOM anchors.
+          overlay.setAttribute('viewBox', `0 0 ${Math.max(1, wrapRect.width)} ${Math.max(1, wrapRect.height)}`);
+
+          const ax = (rect) => rect.left - wrapRect.left;
+          const ay = (rect) => rect.top - wrapRect.top;
+          const cx = (rect) => ax(rect) + rect.width / 2;
+          const cy = (rect) => ay(rect) + rect.height / 2;
+          const rightMid = (rect) => ({ x: ax(rect) + rect.width, y: cy(rect) });
+          const leftMid = (rect) => ({ x: ax(rect), y: cy(rect) });
+
+          const p12a = rightMid(iRect);
+          const p12b = leftMid(designRect);
+          const p23a = rightMid(designRect);
+          const p23b = leftMid(sRect);
+          const p34a = rightMid(sRect);
+          const p34b = leftMid(feedbackRect);
+
+          const from = { x: cx(feedbackRect), y: ay(feedbackRect) + feedbackRect.height };
+          const target = { x: cx(designRect), y: ay(designRect) + designRect.height };
+          const baselineDesired = Math.max(from.y + 50, target.y + 50);
+          const baselineMax = wrapRect.height - 28;
+          const baseline = Math.min(baselineDesired, baselineMax);
+
+          const pLoop = `M ${from.x} ${from.y} L ${from.x} ${baseline} L ${target.x} ${baseline} L ${target.x} ${target.y}`;
+
+          overlay.querySelector('#wf-p12')?.setAttribute('d', `M ${p12a.x} ${p12a.y} L ${p12b.x} ${p12b.y}`);
+          overlay.querySelector('#wf-p23')?.setAttribute('d', `M ${p23a.x} ${p23a.y} L ${p23b.x} ${p23b.y}`);
+          overlay.querySelector('#wf-p34')?.setAttribute('d', `M ${p34a.x} ${p34a.y} L ${p34b.x} ${p34b.y}`);
+          overlay.querySelector('#wf-ploop')?.setAttribute('d', pLoop);
+
+          loopText.style.left = `${target.x + 14}px`;
+          loopText.style.top = `${baseline - 20}px`;
+        };
+
+        const carousels = document.querySelectorAll('[data-carousel]');
+        carousels.forEach((carousel) => {
+          const slides = Array.from(carousel.querySelectorAll('[data-slide]'));
+          const prev = carousel.querySelector('[data-prev]');
+          const next = carousel.querySelector('[data-next]');
+          const meta = carousel.querySelector('[data-meta]');
+          let idx = 0;
+
+          const pauseOtherVideos = (activeSlide) => {
+            slides.forEach((s) => {
+              if (s === activeSlide) return;
+              const v = s.querySelector('video');
+              if (v && !v.paused) v.pause();
+            });
+          };
+
+          const render = () => {
+            slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+            if (meta) meta.textContent = `${idx + 1} / ${slides.length}`;
+            pauseOtherVideos(slides[idx]);
+            const disabled = slides.length <= 1;
+            if (prev) prev.disabled = disabled;
+            if (next) next.disabled = disabled;
+          };
+
+          const step = (delta) => {
+            if (slides.length <= 1) return;
+            idx = (idx + delta + slides.length) % slides.length;
+            render();
+          };
+
+          if (prev) prev.addEventListener('click', () => step(-1));
+          if (next) next.addEventListener('click', () => step(1));
+          render();
+        });
+
+        syncWorkflowDiagram();
+        window.addEventListener('resize', syncWorkflowDiagram);
+      })();
+    </script>
   </body>
 </html>
