@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import os
 from pathlib import Path
+import tempfile
 from typing import Any
 
 import mujoco
@@ -25,6 +27,15 @@ def default_mjcf_path() -> Path:
     return Path(__file__).resolve().parent / "mjcf" / MJCF_NAME
 
 
+def default_scene_files() -> tuple[Path, ...]:
+    """Default composed scene: base descriptor + orange box object."""
+    mjcf_dir = Path(__file__).resolve().parent / "mjcf"
+    return (
+        mjcf_dir / "ur5e_two_finger_scene.xml",
+        mjcf_dir / "scene_objects" / "orange_box.xml",
+    )
+
+
 @dataclass
 class UR5GripperEnv:
     """MuJoCo scene with UR5e arm, Robotiq 2F-85 adaptive gripper (tendon drive, ctrl 0–255), and RGB cameras."""
@@ -34,10 +45,44 @@ class UR5GripperEnv:
     cameras: tuple[CameraSpec, ...] = DEFAULT_CAMERAS
     seed: int | None = None
     enable_rgb: bool = True
+    scene_files: tuple[Path, ...] | None = field(default_factory=default_scene_files)
+
+    def _composed_scene_path(self) -> Path:
+        files = tuple(Path(p).resolve() for p in self.scene_files)
+        base = files[0]
+        if not base.is_file():
+            raise FileNotFoundError(f"base scene file not found: {base}")
+        base_xml = base.read_text(encoding="utf-8")
+        if len(files) == 1:
+            return base
+        marker = "<!-- SCENE_IMPORTS -->"
+        if marker not in base_xml:
+            raise ValueError(f"base scene missing marker {marker!r}: {base}")
+        include_lines = "\n".join(f'    <include file="{p.resolve()}"/>' for p in files[1:])
+        composed_xml = base_xml.replace(marker, include_lines)
+        fd, tmp_name = tempfile.mkstemp(
+            prefix="_composed_scene_",
+            suffix=".xml",
+            dir=base.parent,
+            text=True,
+        )
+        tmp_path = Path(tmp_name)
+        # ``mkstemp`` returns a low-level fd; write and close it explicitly.
+        with os.fdopen(fd, "w", encoding="utf-8", closefd=True) as f:
+            f.write(composed_xml)
+        return tmp_path
 
     def __post_init__(self) -> None:
         self._rng = np.random.default_rng(self.seed)
-        self.model = mujoco.MjModel.from_xml_path(str(self.mjcf_path))
+        if self.scene_files:
+            composed_path = self._composed_scene_path()
+            try:
+                self.model = mujoco.MjModel.from_xml_path(str(composed_path))
+            finally:
+                if composed_path.name.startswith("_composed_scene_"):
+                    composed_path.unlink(missing_ok=True)
+        else:
+            self.model = mujoco.MjModel.from_xml_path(str(self.mjcf_path))
         self.data = mujoco.MjData(self.model)
         self._substeps = max(1, int(round(self.control_dt / self.model.opt.timestep)))
         self.nu = int(self.model.nu)

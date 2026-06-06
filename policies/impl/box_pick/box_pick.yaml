@@ -22,4 +22,8 @@ task_spec:
     Fail if the arm collides catastrophically with itself or the environment.
   policy_module: policies/impl/box_pick/box_pick.py
 
+scene_files:
+  - src/robot_manipulation_sim/mjcf/ur5e_two_finger_scene.xml
+  - src/robot_manipulation_sim/mjcf/scene_objects/orange_box.xml
+
 rgb: true

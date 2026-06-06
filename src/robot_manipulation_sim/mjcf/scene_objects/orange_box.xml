@@ -1,0 +1,8 @@
+<mujocoinclude>
+  <body name="grasp_box" pos="0.52 0.0 0.035">
+    <freejoint name="grasp_box_free"/>
+    <site name="box_site" type="sphere" size="0.001" rgba="0 0 0 0"/>
+    <inertial pos="0 0 0" mass="0.12" diaginertia="2e-4 2e-4 2e-4"/>
+    <geom name="box_geom" type="box" size="0.025 0.04 0.025" friction="1 0.01 0.001" rgba="0.85 0.55 0.2 1"/>
+  </body>
+</mujocoinclude>

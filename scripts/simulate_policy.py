@@ -23,6 +23,7 @@ except ModuleNotFoundError as e:
     ) from e
 import mujoco
 import numpy as np
+import yaml
 
 from robot_manipulation_sim.cameras import (
     clear_renderer_cache,
@@ -75,6 +76,38 @@ def load_policy(path: Path, policy_symbol: str = "policy") -> PolicyFn:
     if fn is None or not callable(fn):
         raise AttributeError(f"{path} must define callable {policy_symbol}(obs, step, env) -> ctrl")
     return fn  # type: ignore[return-value]
+
+
+def _load_task_scene_files(task: str | None) -> tuple[Path, ...] | None:
+    """Optional scene composition list from ``policies/impl/<task>/<task>.yaml``."""
+    repo_root = _repo_root()
+    if not task:
+        return None
+    task_yaml = (_repo_root() / "policies" / "impl" / task / f"{task}.yaml").resolve()
+    if not task_yaml.is_file():
+        return None
+    raw = yaml.safe_load(task_yaml.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        return None
+    scene_files = raw.get("scene_files")
+    if scene_files is None:
+        return None
+    if not isinstance(scene_files, list) or not scene_files:
+        raise ValueError(f"{task_yaml}: scene_files must be a non-empty list")
+    out: list[Path] = []
+    for i, item in enumerate(scene_files):
+        if not isinstance(item, str) or not item.strip():
+            raise ValueError(f"{task_yaml}: scene_files[{i}] must be a non-empty string")
+        p = Path(item)
+        if p.is_absolute():
+            path = p.resolve()
+        else:
+            from_repo = (repo_root / p).resolve()
+            path = from_repo if from_repo.is_file() else (task_yaml.parent / p).resolve()
+        if not path.is_file():
+            raise FileNotFoundError(f"{task_yaml}: scene_files[{i}] not found: {path}")
+        out.append(path)
+    return tuple(out)
 
 
 def _load_policy_analyzer(task: str, analyzer_type: str, params: dict[str, Any]) -> Any:
@@ -490,7 +523,12 @@ def main() -> None:
     joint_header_written = False
 
     try:
-        env = UR5GripperEnv(enable_rgb=args.include_rgb_observation, seed=1000)
+        scene_files = _load_task_scene_files(args.task)
+        env = UR5GripperEnv(
+            enable_rgb=args.include_rgb_observation,
+            seed=1000,
+            scene_files=scene_files,
+        )
         obs = env.reset()
         reset_fn = getattr(policy, "reset", None)
         if callable(reset_fn):
