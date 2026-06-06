@@ -1,0 +1,19 @@
+# Task rubric + intent for ``task: path_tracing``.
+
+task_spec:
+  inline: |
+    Primary goal: the tip of the gripper traces the 12 edges of a virtual cube in the air.
+
+    Algorithm: two-phase precomputed IK trajectory (mink differential IK).
+      Phase 1 — Approach: straight-line tool0 path from the episode-start pose to
+        ``CUBE_CORNER0_WORLD = [-0.45, -0.25, 0.20]`` m (world frame) over ``APPROACH_DURATION_S`` s.
+      Phase 2 — Cube trace: 16-segment connected path covering all 12 unique cube edges
+        (corner sequence 0→1→2→3→0→4→5→6→7→4→0→3→7→6→2→1→5) over ``CUBE_DURATION_S`` s.
+        Cube side = ``CUBE_SIDE_M`` m, axes aligned with world +X, +Y, +Z.
+      Orientation: fixed at episode-start value throughout both phases.
+      IK tracking error target: < 1.5 mm position error across the cube trace.
+
+    Fail if the arm collides catastrophically with itself or the environment.
+  policy_module: policies/impl/path_tracing/path_tracing.py
+
+rgb: false

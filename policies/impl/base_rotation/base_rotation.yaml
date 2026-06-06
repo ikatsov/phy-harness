@@ -1,17 +1,21 @@
-# Task rubric + intent for ``task: base_rotation`` (see ``policies/validation.example.yaml``).
+# Task rubric + intent for ``task: base_rotation`` (used by simulation analyzers).
 # The ``task:`` value must match this directory and filenames: ``impl/base_rotation/base_rotation.{yaml,py}``.
-# ``policy_module`` is resolved from the main config's ``base_dir`` (repo root when using ``policies/validation.example.yaml``).
+# ``policy_module`` is resolved from the main config's ``base_dir``.
 
 task_spec:
   inline: |
     Primary goal: The arm must rotate at least 180 degrees around the robot base.
     Requirements: Only the robot base (shoulder pan) should rotate slowly about the vertical axis.
-    All other arm joints and the gripper must remain at their **home configuration** (same
-    joint angles as at episode start): no grasping or lift maneuver, and no large articulation
-    of shoulder/elbow/wrist beyond small tracking error.
+    The policy uses **differential IK** (``mink``) on ``tool0`` for a small world-Z rotation each step;
+    install extras ``pip install -e ".[ik]"``. All other arm joints and the gripper must remain at their
+    **home configuration** (same joint angles as at episode start): no grasping or lift maneuver, and no
+    large articulation of shoulder/elbow/wrist beyond small tracking error.
     Motion must look smooth and controlled, not chaotic.
     Fail if the arm collides catastrophically with itself or the environment.
   policy_module: policies/impl/base_rotation/base_rotation.py
+
+
+rgb: false
 
 task_analyzers:
   - type: joints_csv_base_rotation

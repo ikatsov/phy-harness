@@ -13,7 +13,7 @@ from robot_manipulation_sim.cameras import CameraSpec, render_cameras, render_rg
 
 MJCF_NAME = "ur5e_two_finger_scene.xml"
 # Cameras for ``obs["images"]`` when ``enable_rgb``; names must match MJCF. Rollout MP4 (``simulate_policy``)
-# uses ``overview`` (perspective) + ``wrist_rgb`` plus matching depth tiles — see ``render_rollout_rgb_depth_grid``.
+# uses ``overview`` + ``wrist_rgb`` (row 0) and ``front_rgb`` + top-down (row 1) — see ``render_rollout_four_view_grid``.
 DEFAULT_CAMERAS: tuple[CameraSpec, ...] = (
     CameraSpec("overview", 640, 480),
     CameraSpec("wrist_rgb", 480, 360),
@@ -41,9 +41,11 @@ class UR5GripperEnv:
         self.data = mujoco.MjData(self.model)
         self._substeps = max(1, int(round(self.control_dt / self.model.opt.timestep)))
         self.nu = int(self.model.nu)
-        # Last actuator: Robotiq ``a_gripper`` tendon command in [0, 255] (Menagerie 2F-85 model).
+        # Last value: ``a_gripper`` (0–255). Settled finger geometry vs ``ctrl`` is non-obvious;
+        # we use ``0`` so reset matches policies that treat low ``ctrl`` as open — see
+        # ``tests/test_gripper_control_finger_geometry.py``.
         self._home = np.array(
-            [-1.5708, -1.5708, 1.5708, -1.5708, -1.5708, 0.0, 220.0],
+            [-1.5708, -1.5708, 1.5708, -1.5708, -1.5708, 0.0, 0.0],
             dtype=np.float64,
         )
 

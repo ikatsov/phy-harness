@@ -23,6 +23,6 @@ class ValidationContext:
     metrics_text: str | None = None
     """Plain-text ``metrics.txt`` body, if present."""
     task_spec: str | None = None
-    """Task text from YAML (optional). Used by ``vlm_observer`` task streams, generic ``joints_csv_trajectory`` excerpts, and task-specific analyzers."""
+    """Optional task text forwarded to analyzers."""
     config_path: Path | None = None
     """Path to the YAML file that produced this context, if any."""

@@ -45,7 +45,7 @@
         <joint range="-0.872664 0.9" armature="0.001" solimplimit="0.95 0.99 0.001" solreflimit="0.005 1"/>
       </default>
       <default class="rq2f85_spring_link">
-        <joint range="-0.29670597283 0.9" armature="0.001" stiffness="0.05" springref="2.62" damping="0.00125"/>
+        <joint range="-0.29670597283 0.9" armature="0.001" stiffness="0.002" springref="2.62" damping="0.00125"/>
       </default>
       <default class="rq2f85_coupler">
         <joint range="-1.57 0" armature="0.001" solimplimit="0.95 0.99 0.001" solreflimit="0.005 1"/>

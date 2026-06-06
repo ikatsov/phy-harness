@@ -26,6 +26,51 @@ def camera_id(model: mujoco.MjModel, name: str) -> int:
     return cid
 
 
+# ---------------------------------------------------------------------------
+# Persistent renderer pool
+# ---------------------------------------------------------------------------
+# mujoco.Renderer allocates a GL/GPU context on construction, which is expensive.
+# Reusing renderers across render_rgb / render_depth calls on the same model
+# eliminates thousands of needless alloc/free cycles per rollout.
+#
+# Key: (id(model), height, width)  — id() is the CPython object address, so
+# distinct MjModel instances get distinct pools even if they describe the same MJCF.
+# Call clear_renderer_cache() when a model is about to be discarded.
+# ---------------------------------------------------------------------------
+
+_RendererKey = tuple[int, int, int]  # (id(model), height, width)
+_renderer_cache: dict[_RendererKey, mujoco.Renderer] = {}
+
+
+def _get_renderer(model: mujoco.MjModel, height: int, width: int) -> mujoco.Renderer:
+    key = (id(model), int(height), int(width))
+    rend = _renderer_cache.get(key)
+    if rend is None:
+        rend = mujoco.Renderer(model, height=int(height), width=int(width))
+        _renderer_cache[key] = rend
+    return rend
+
+
+def clear_renderer_cache(model: mujoco.MjModel | None = None) -> None:
+    """Close and remove cached renderers.
+
+    Pass a specific *model* to release only renderers for that model instance
+    (call before discarding an ``MjModel``). Omit to clear the entire cache.
+    """
+    if model is None:
+        keys = list(_renderer_cache.keys())
+    else:
+        target = id(model)
+        keys = [k for k in _renderer_cache if k[0] == target]
+    for key in keys:
+        rend = _renderer_cache.pop(key, None)
+        if rend is not None:
+            try:
+                rend.close()
+            except Exception:  # noqa: BLE001
+                pass
+
+
 def render_rgb(
     model: mujoco.MjModel,
     data: mujoco.MjData,
@@ -35,13 +80,15 @@ def render_rgb(
     *,
     scene_option: mujoco.MjvOption | None = None,
 ) -> np.ndarray:
-    """Return uint8 HxWx3 RGB image from a fixed or body-mounted camera."""
-    renderer = mujoco.Renderer(model, height=height, width=width)
-    try:
-        renderer.update_scene(data, camera=camera_id(model, camera_name), scene_option=scene_option)
-        return renderer.render()
-    finally:
-        renderer.close()
+    """Return uint8 HxWx3 RGB image from a fixed or body-mounted camera.
+
+    Reuses a cached ``mujoco.Renderer`` for this ``(model, height, width)`` combination
+    to avoid repeated GL context allocation. Call :func:`clear_renderer_cache` when the
+    model is about to be discarded.
+    """
+    renderer = _get_renderer(model, height, width)
+    renderer.update_scene(data, camera=camera_id(model, camera_name), scene_option=scene_option)
+    return renderer.render()
 
 
 def render_depth(
@@ -53,15 +100,17 @@ def render_depth(
     *,
     scene_option: mujoco.MjvOption | None = None,
 ) -> np.ndarray:
-    """Return float32 HxW **metric depth** (meters) from the same camera as ``render_rgb``."""
-    renderer = mujoco.Renderer(model, height=height, width=width)
+    """Return float32 HxW **metric depth** (meters) from the same camera as ``render_rgb``.
+
+    Reuses a cached renderer; temporarily enables depth rendering and restores RGB mode.
+    """
+    renderer = _get_renderer(model, height, width)
+    renderer.update_scene(data, camera=camera_id(model, camera_name), scene_option=scene_option)
+    renderer.enable_depth_rendering()
     try:
-        renderer.update_scene(data, camera=camera_id(model, camera_name), scene_option=scene_option)
-        renderer.enable_depth_rendering()
         return renderer.render()
     finally:
         renderer.disable_depth_rendering()
-        renderer.close()
 
 
 def depth_to_grayscale_rgb(
@@ -415,4 +464,55 @@ def render_rollout_rgb_depth_grid(
 
     row0 = np.concatenate([ov_rgb, wr_rgb], axis=1)
     row1 = np.concatenate([ov_dep, wr_dep], axis=1)
+    return pad_to_even_hw(np.concatenate([row0, row1], axis=0))
+
+
+def render_rollout_four_view_grid(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    cell_h: int,
+    cell_w: int,
+    *,
+    perspective_camera: str = "overview",
+    wrist_camera: str = "wrist_rgb",
+    front_camera: str = "front_rgb",
+    side_camera: str = "side_rgb",
+    scene_option: mujoco.MjvOption | None = None,
+    perspective_traces: tuple[tuple[np.ndarray, tuple[int, int, int]], ...] | None = None,
+    front_traces: tuple[tuple[np.ndarray, tuple[int, int, int]], ...] | None = None,
+    side_traces: tuple[tuple[np.ndarray, tuple[int, int, int]], ...] | None = None,
+) -> np.ndarray:
+    """2×2 rollout frame: row0 = perspective RGB | wrist RGB; row1 = front isometric | side isometric.
+
+    ``front_camera`` looks along +Y (frontal view of robot workspace); ``side_camera`` looks along +X
+    (profile view of the lift arc). Each tile is resized to ``cell_h``×``cell_w`` before stitching.
+
+    Optional kinematic overlays (each entry is ``(polyline, rgb)``; ``polyline`` is ``(T, 2)`` float
+    pixel coords in ``cell_w``×``cell_h`` space after resize):
+
+    * ``perspective_traces`` — drawn on the **top-left** tile (``perspective_camera``).
+    * ``front_traces`` — drawn on the **bottom-left** tile (``front_camera``).
+    * ``side_traces`` — drawn on the **bottom-right** tile (``side_camera``, often top-down).
+
+    The **wrist** tile (top-right) is left without polylines unless extended later.
+    """
+    ov_rgb = render_rgb(model, data, perspective_camera, cell_w, cell_h, scene_option=scene_option)
+    wr_rgb = render_rgb(model, data, wrist_camera, cell_w, cell_h, scene_option=scene_option)
+    fr_rgb = render_rgb(model, data, front_camera, cell_w, cell_h, scene_option=scene_option)
+    si_rgb = render_rgb(model, data, side_camera, cell_w, cell_h, scene_option=scene_option)
+    ov_rgb = resize_nn(ov_rgb, cell_h, cell_w)
+    wr_rgb = resize_nn(wr_rgb, cell_h, cell_w)
+    fr_rgb = resize_nn(fr_rgb, cell_h, cell_w)
+    si_rgb = resize_nn(si_rgb, cell_h, cell_w)
+
+    def _draw(tile: np.ndarray, traces: tuple[tuple[np.ndarray, tuple[int, int, int]], ...] | None) -> None:
+        if traces:
+            draw_polylines_on_tile(tile, tuple(p for p, _ in traces), tuple(c for _, c in traces))
+
+    _draw(ov_rgb, perspective_traces)
+    _draw(fr_rgb, front_traces)
+    _draw(si_rgb, side_traces)
+
+    row0 = np.concatenate([ov_rgb, wr_rgb], axis=1)
+    row1 = np.concatenate([fr_rgb, si_rgb], axis=1)
     return pad_to_even_hw(np.concatenate([row0, row1], axis=0))

@@ -1,0 +1,25 @@
+# Task rubric for ``task: box_pick`` (used by simulation analyzers).
+#
+# Detection: orange box located with HSV colour detection on the topdown camera.
+# Control: 8-phase precomputed IK plan (crane settle → approach → descend → grip → lift → transport → lower → release).
+# Set ``steps: 650`` in simulate_policy YAML to cover the full 13-second episode.
+
+task_spec:
+  inline: |
+    Primary goal: The gripper must pick up the orange box from above and place it on the table
+    at a different location (near PLACE_XY = [0.30, 0.35] m in world frame).
+
+    Detection: use the topdown camera to detect the orange box by colour (no ground-truth position).
+    Motion: 8-phase IK plan:
+      Phase 0 (crane settle, T_CRANE=2.0 s): arm joints linearly interpolate from qpos=0 to the
+        home ctrl-target joints.  At the ctrl-target ("crane") pose the tool0 already has
+        body-Z = world -Z (R_GRASP orientation), so all subsequent phases are in the correct
+        orientation half-space — no folded arm.
+      Phases 1-7: approach (crane → pre-grasp), descend, grip, lift, transport, lower, release.
+    Total episode: ~13 s → set steps: 650.
+
+    Success: box centre of mass rises above 0.12 m at some point during the episode (lift success).
+    Fail if the arm collides catastrophically with itself or the environment.
+  policy_module: policies/impl/box_pick/box_pick.py
+
+rgb: true

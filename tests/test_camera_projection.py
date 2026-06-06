@@ -22,6 +22,33 @@ def test_project_shoulder_link_inside_overview_tile() -> None:
     assert 0 <= uv[0] < w and 0 <= uv[1] < h
 
 
+def test_project_shoulder_link_inside_front_and_topdown_tiles() -> None:
+    m = mujoco.MjModel.from_xml_path(str(default_mjcf_path()))
+    d = mujoco.MjData(m)
+    mujoco.mj_resetData(m, d)
+    mujoco.mj_forward(m, d)
+    bid = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_BODY, "shoulder_link")
+    xyz = np.asarray(d.xpos[bid], dtype=np.float64).reshape(1, 3)
+    w, h = 426, 360
+    for cam in ("front_rgb", "topdown"):
+        uv = project_world_positions_to_camera_pixels(m, d, cam, w, h, xyz)[0]
+        assert np.all(np.isfinite(uv)), cam
+        assert 0 <= uv[0] < w and 0 <= uv[1] < h, cam
+
+
+def test_project_left_pad2_geom_inside_topdown_tile() -> None:
+    m = mujoco.MjModel.from_xml_path(str(default_mjcf_path()))
+    d = mujoco.MjData(m)
+    mujoco.mj_resetData(m, d)
+    mujoco.mj_forward(m, d)
+    gid = mujoco.mj_name2id(m, mujoco.mjtObj.mjOBJ_GEOM, "left_pad2")
+    xyz = np.asarray(d.geom_xpos[gid], dtype=np.float64).reshape(1, 3)
+    w, h = 426, 360
+    uv = project_world_positions_to_camera_pixels(m, d, "topdown", w, h, xyz)[0]
+    assert np.all(np.isfinite(uv))
+    assert 0 <= uv[0] < w and 0 <= uv[1] < h
+
+
 def test_draw_polylines_mutates_uint8_tile() -> None:
     tile = np.zeros((40, 50, 3), dtype=np.uint8)
     poly = np.array([[5.0, 10.0], [45.0, 30.0]], dtype=np.float64)

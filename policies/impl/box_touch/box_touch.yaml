@@ -1,9 +1,0 @@
-# Task rubric for ``task: box_touch`` (validation via ``policies/validation.example.yaml`` with ``task: box_touch``).
-
-task_spec:
-  inline: |
-    Primary goal: The tip of the gripper must touch the orange box from above.
-    Requirements: Motion must look smooth and controlled, not chaotic.
-    Fail if the box is not accurately touched from above by the tip of the gripper.
-    Fail if the arm collides catastrophically with itself or the environment.
-  policy_module: policies/impl/box_touch/box_touch.py

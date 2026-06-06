@@ -17,8 +17,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.4", "ruff>=0.4"]
+dev = ["pytest>=7.4", "ruff>=0.4", "mink>=0.0.13", "qpsolvers[daqp]>=4.3.0"]
 vlm = ["google-generativeai>=0.8.0", "google-genai>=1.0", "pillow>=10.0", "python-dotenv>=1.0"]
+# Differential IK (MuJoCo-native). On Python 3.14+, PyPI may only offer ``mink`` 0.0.x; on 3.10–3.13 you can
+# install ``mink>=1`` manually if desired.
+ik = ["mink>=0.0.13", "qpsolvers[daqp]>=4.3.0"]
 
 [tool.setuptools]
 include-package-data = true

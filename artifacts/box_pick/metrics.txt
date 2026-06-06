@@ -1,0 +1,6 @@
+SUCCESS_RATE 0/1
+episodes 1
+steps 650
+lift_threshold_z 0.12
+joint_log_interval 1
+episode_1_final_box_z 0.024892

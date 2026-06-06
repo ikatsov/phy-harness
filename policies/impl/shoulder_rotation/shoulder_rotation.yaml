@@ -1,0 +1,24 @@
+# Task rubric + intent for ``task: shoulder_rotation`` (used by simulation analyzers).
+
+task_spec:
+  inline: |
+    Primary goal: The arm follows the ``shoulder_rotation`` policy. The **tool0** TCP pose follows an
+    **explicit** circular arc: at episode start, ``(R₀, p₀)`` and the shoulder-lift hinge ``(û, pivot)``
+    are recorded; the target pose is ``R(θ)=Rodrigues(û, θ)``, ``p(θ)=pivot+R(θ)(p₀−pivot)``,
+    ``R_tool(θ)=R(θ)R₀`` with ``θ`` ramping linearly in time from 0 to ``±π`` (180°). **Mink**
+    differential IK (``pip install -e ".[ik]"``) tracks that ``4×4`` target; all six UR hinge ``ctrl``
+    values come from IK; **gripper** stays latched. Companion motion in pan/elbow/wrist is bounded by
+    ``home_max_excursion_rad`` / ``home_max_span_per_s``.
+    Fail if the arm collides catastrophically with itself or the environment.
+  policy_module: policies/impl/shoulder_rotation/shoulder_rotation.py
+
+rgb: false
+
+task_analyzers:
+  - type: joints_csv_shoulder_rotation
+    enabled: true
+    params:
+      min_lift_total_rad: 0.03
+      home_max_excursion_rad: 0.55
+      home_max_span_per_s: 0.22
+      no_json_file: false

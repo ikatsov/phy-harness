@@ -1,35 +1,32 @@
-# Defaults for ``scripts/simulate_policy.py`` (load with ``--config`` or rely on this path as the default).
-#
-# Paths: ``base_dir`` is joined with this file's directory (``policies/`` + ``..`` → repo root).
-# ``policy_file``, ``run_dir``, and ``video`` are resolved relative to that base unless absolute.
-#
-# Run (from repo root):
-#   python scripts/simulate_policy.py --config policies/simulate_policy.example.yaml
-# Override policy path:
-#   python scripts/simulate_policy.py --config policies/simulate_policy.example.yaml policies/impl/base_rotation/base_rotation.py
+# Minimal config for ``scripts/simulate_policy.py``.
+# Run: python scripts/simulate_policy.py --config policies/simulate_policy.example.yaml
 
 version: 1
 base_dir: ..
 
-policy_file: policies/impl/base_rotation/base_rotation.py
-symbol: policy
+# Main task name. Policy path defaults to policies/impl/<task>/<task>.py.
+task: box_pick
 
-steps: 500
-episodes: 1
-rgb: true
-lift_z: 0.12
-strict: false
+# Number of control steps to run.
+steps: 650
 
-# Output: set ``run_dir`` (bundle layout) or ``video`` (legacy single-file layout), not both.
-run_dir: artifacts/base_rotation
-video: null
+# Optional: set output directory (defaults to artifacts/<task>).
+# run_dir: artifacts/box_pick
 
-joint_log_interval: 1
+# Optional VLM transcript after rollout.
+analyzers:
+  - type: vlm_video_transcriber
+    enabled: false
+    params:
+      every_n_frames: 25
+      max_frames: 120
 
-video_cell_h: 360
-video_cell_w: 426
-video_separator_frames: 12
-# null → use 1 / env.control_dt
-video_fps: null
-
-no_overview_traces: false
+# Advanced options (uncomment only if needed):
+# policy_symbol: policy
+# include_rgb_observation: false
+# joint_log_every_steps: 1
+# video: null
+# video_tile_height: 360
+# video_tile_width: 426
+# video_output_fps: null
+# disable_kinematic_overlays: false

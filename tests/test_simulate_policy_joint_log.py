@@ -24,7 +24,12 @@ def test_joint_log_row_matches_header():
     env = UR5GripperEnv(enable_rgb=False, seed=0)
     env.reset()
     h = sim.joint_log_header(env.model)
-    r = sim.joint_log_row(env.model, env.data, episode=1, sim_step=0)
+    assert any(c.startswith("target_") for c in h)
+    assert h.count("episode") == 1
+    tgt = np.array(env.data.ctrl, dtype=np.float64).copy()
+    r = sim.joint_log_row(env.model, env.data, episode=1, sim_step=0, target_ctrl=tgt)
     assert len(h) == len(r)
     assert h[0] == "episode" and r[0] == 1
     assert np.isfinite(r[2])  # time_sec
+    # Rounded floats (policy target should match applied ctrl at rest)
+    assert abs(float(r[h.index("target_a_shoulder_pan")]) - float(r[h.index("ctrl_a_shoulder_pan")])) < 1e-9

@@ -17,7 +17,7 @@
   </default>
 
   <asset>
-    <texture name="grid_tex" type="2d" builtin="checker" width="512" height="512" rgb1="0.1 0.2 0.1" rgb2="0.2 0.3 0.2"/>
+    <texture name="grid_tex" type="2d" builtin="checker" width="512" height="512" rgb1="0.25 0.25 0.25" rgb2="0.45 0.45 0.45"/>
     <material name="grid_mat" texture="grid_tex" texrepeat="8 8" reflectance="0.2"/>
   </asset>
 
@@ -30,10 +30,12 @@
 
     <geom name="floor" type="plane" size="3 3 0.01" material="grid_mat" condim="3"/>
 
-    <camera name="overview" pos="1.1 1.0 0.85" mode="fixed" xyaxes="-0.65 0.76 0 -0.35 -0.30 0.89"/>
-    <camera name="topdown" pos="0.38 0 2.35" mode="fixed" xyaxes="1 0 0 0 1 0" fovy="48"/>
-    <!-- Side / profile view (-X side of table, looking +X); pairs with overview/topdown/wrist in 2×2 rollout video -->
-    <camera name="side_rgb" pos="-1.15 0.38 0.65" mode="fixed" xyaxes="0 -1 0 0 0 -1"/>
+    <camera name="overview" pos="1.6 1.2 1.2" mode="fixed" xyaxes="-0.65 0.76 0 -0.35 -0.30 0.89"/>
+    <camera name="topdown" pos="0 0 2.35" mode="fixed" xyaxes="1 0 0 0 1 0" fovy="48"/>
+    <!-- Side / profile view (-X side of table, looking +X, up=world+Z) -->
+    <camera name="side_rgb" pos="-3 0 0.3" mode="fixed" xyaxes="0 -1 0 0 0 1"/>
+    <!-- Front view (-Y side of table, looking +Y, up=world+Z); pairs with side_rgb in 2×2 rollout video row1 -->
+    <camera name="front_rgb" pos="0 -3 0.3" mode="fixed" xyaxes="1 0 0 0 0 1"/>
 
     <body name="grasp_box" pos="0.52 0.0 0.035">
       <freejoint name="grasp_box_free"/>
@@ -43,15 +45,17 @@
     </body>
   </worldbody>
 
+  <!-- Arm ``position`` actuators: ``kp`` → stiffness toward ``ctrl``; ``kv`` → velocity damping (reduces
+       high-frequency ringing when setpoints change every control step). Values are sim-harness tuning. -->
   <actuator>
-    <position name="a_shoulder_pan" joint="shoulder_pan_joint" kp="2000" ctrlrange="-6.28319 6.28319"/>
-    <position name="a_shoulder_lift" joint="shoulder_lift_joint" kp="2000" ctrlrange="-6.28319 6.28319"/>
-    <position name="a_elbow" joint="elbow_joint" kp="1500" ctrlrange="-3.1415 3.1415"/>
-    <position name="a_wrist_1" joint="wrist_1_joint" kp="500" ctrlrange="-6.28319 6.28319"/>
-    <position name="a_wrist_2" joint="wrist_2_joint" kp="500" ctrlrange="-6.28319 6.28319"/>
-    <position name="a_wrist_3" joint="wrist_3_joint" kp="500" ctrlrange="-6.28319 6.28319"/>
-    <general name="a_gripper" tendon="split" forcerange="-5 5" ctrlrange="0 255"
-      gainprm="0.3137255 0 0" biasprm="0 -100 -10"/>
+    <position name="a_shoulder_pan" joint="shoulder_pan_joint" kp="8000" kv="320" ctrlrange="-6.28319 6.28319"/>
+    <position name="a_shoulder_lift" joint="shoulder_lift_joint" kp="8000" kv="320" ctrlrange="-6.28319 6.28319"/>
+    <position name="a_elbow" joint="elbow_joint" kp="6000" kv="240" ctrlrange="-3.1415 3.1415"/>
+    <position name="a_wrist_1" joint="wrist_1_joint" kp="4000" kv="160" ctrlrange="-6.28319 6.28319"/>
+    <position name="a_wrist_2" joint="wrist_2_joint" kp="4000" kv="160" ctrlrange="-6.28319 6.28319"/>
+    <position name="a_wrist_3" joint="wrist_3_joint" kp="4000" kv="160" ctrlrange="-6.28319 6.28319"/>
+    <general name="a_gripper" tendon="split" gaintype="fixed" biastype="affine" forcerange="-400 400" ctrlrange="0 255"
+      gainprm="2.0 0 0" biasprm="-300 0 -10"/>
   </actuator>
 
   <sensor>
