@@ -620,8 +620,12 @@ def main() -> None:
                         )
                         joints_file.flush()
 
-        final_box_z = env._body_pos_z("grasp_box")
-        log(f"final_box_z={final_box_z:.4f}")
+        try:
+            final_box_z = env._body_pos_z("grasp_box")
+            log(f"final_box_z={final_box_z:.4f}")
+        except KeyError:
+            final_box_z = float("nan")
+            log("final_box_z=nan (scene has no grasp_box)")
         clear_renderer_cache(env.model)
 
     finally:

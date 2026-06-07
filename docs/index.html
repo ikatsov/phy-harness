@@ -277,6 +277,24 @@
         margin-bottom: 12px;
       }
 
+      .card-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .card-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        color: var(--accent);
+        background: #eaf2ff;
+        border: 1px solid #c7daf8;
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+
       .card ul {
         padding-left: 18px;
         color: var(--muted);
@@ -299,6 +317,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
         gap: 22px;
+        align-items: stretch;
       }
 
       .usecase-card {
@@ -308,6 +327,9 @@
         padding: 16px 16px 18px;
         transition: border-color .25s, box-shadow .25s, transform .2s;
         box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
       }
 
       .usecase-card:hover {
@@ -347,6 +369,7 @@
         border-radius: 12px;
         background: #f9fbff;
         overflow: hidden;
+        margin-top: auto;
       }
 
       .carousel-stage {
@@ -517,27 +540,35 @@
 
       <!-- artifacts -->
       <section>
-        <div class="section-label">Outputs</div>
-        <h2>Core artifacts</h2>
+        <div class="section-label">Agent Foundations</div>
+        <h2>Why this workflow scales</h2>
         <div class="two-col">
           <div class="card">
-            <h3>Simulation outputs</h3>
+            <h3 class="card-title"><span class="card-badge" aria-hidden="true">01</span>Task-level abstractions</h3>
             <ul>
-              <li><code>rollout.mp4</code> — augmented 4-camera 2×2 grid with kinematic overlays</li>
-              <li><code>joints.csv</code> — joint qpos + target vs applied controls per step</li>
-              <li><code>metrics.txt</code> — episode summary</li>
-              <li><code>rollout.vlm_transcript.json</code> — per-frame VLM descriptions when enabled</li>
-              <li>Custom analyzer JSON files per task</li>
+              <li>IK and Vision services hide low-level math, geometry, and camera plumbing</li>
+              <li>The development agent can operate at policy/task intent level instead of raw simulator internals</li>
+              <li>Shared services keep implementations consistent across tasks</li>
+              <li>Policy files stay focused on behavior design rather than infrastructure code</li>
             </ul>
           </div>
           <div class="card">
-            <h3>Why this loop works</h3>
+            <h3 class="card-title"><span class="card-badge" aria-hidden="true">02</span>Enriched simulation outputs</h3>
             <ul>
-              <li>Visual evidence catches control/physics pathologies immediately</li>
-              <li>Joint logs make hypotheses testable and repeatable</li>
-              <li>VLM transcripts describe each sampled frame in natural language</li>
-              <li>Custom analyzers convert observations into structured signals</li>
-              <li>Focused tests prevent regressions during iteration</li>
+              <li><code>rollout.mp4</code> includes 4-view video with kinematic overlays</li>
+              <li><code>joints.csv</code> captures target vs applied controls at each step</li>
+              <li><code>rollout.vlm_transcript.json</code> adds VLM-generated frame-level descriptions</li>
+              <li>Custom analyzers convert trajectories into structured task diagnostics</li>
+              <li>Together, these artifacts make failure modes explicit and debuggable</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3 class="card-title"><span class="card-badge" aria-hidden="true">03</span>Hypothesis-driven redesign</h3>
+            <ul>
+              <li>During Redesign, the development agent can run multiple ad hoc tests per hypothesis</li>
+              <li>Tests validate root-cause assumptions before policy changes are finalized</li>
+              <li>Fast test loops reduce guesswork and prevent overfitting to one rollout</li>
+              <li>Focused regression checks help preserve fixes across iterations</li>
             </ul>
           </div>
         </div>
@@ -550,38 +581,28 @@
         <div class="usecase-grid">
           <article class="usecase-card">
             <div class="usecase-head">
-              <h3 class="usecase-title">Box Pick</h3>
+              <h3 class="usecase-title">Shoulder Rotation</h3>
               <p class="usecase-desc">
-                <strong>Primary goal:</strong> pick the orange box from above and place it at a different table
-                location. Uses topdown color detection and an 8-phase IK plan
-                (crane → approach → descend → grip → lift → transport → lower → release) from
-                <code>policies/impl/box_pick/box_pick.yaml</code>.
+                <strong>Primary goal:</strong> rotate around the shoulder-lift hinge while keeping a controlled TCP
+                arc and stable gripper state using explicit arc targets + IK from
+                <code>policies/impl/shoulder_rotation/shoulder_rotation.yaml</code>.
               </p>
             </div>
             <div class="carousel" data-carousel>
               <div class="carousel-stage">
                 <div class="carousel-slide active" data-slide>
-                  <div class="slide-label"><span class="hl">Iteration 1:</span> generated policy with control/physics issue</div>
+                  <div class="slide-label"><span class="hl">Iteration 1:</span> shoulder rotation rollout</div>
                   <video controls preload="metadata">
-                    <source src="./box_pick_rollout_001.mp4" type="video/mp4" />
-                    <source src="./docs/box_pick_rollout_001.mp4" type="video/mp4" />
-                    <a href="./box_pick_rollout_001.mp4">Download video</a>
+                    <source src="./shoulder_rotation_rollout_001.mp4" type="video/mp4" />
+                    <source src="./docs/shoulder_rotation_rollout_001.mp4" type="video/mp4" />
+                    <a href="./shoulder_rotation_rollout_001.mp4">Download video</a>
                   </video>
-                  <small class="usecase-file"><a href="./box_pick_rollout_001.mp4">box_pick_rollout_001.mp4</a></small>
-                </div>
-                <div class="carousel-slide" data-slide>
-                  <div class="slide-label"><span class="hl">Iteration 2:</span> updated policy after investigation and fix</div>
-                  <video controls preload="metadata">
-                    <source src="./box_pick_rollout_002.mp4" type="video/mp4" />
-                    <source src="./docs/box_pick_rollout_002.mp4" type="video/mp4" />
-                    <a href="./box_pick_rollout_002.mp4">Download video</a>
-                  </video>
-                  <small class="usecase-file"><a href="./box_pick_rollout_002.mp4">box_pick_rollout_002.mp4</a></small>
+                  <small class="usecase-file"><a href="./shoulder_rotation_rollout_001.mp4">shoulder_rotation_rollout_001.mp4</a></small>
                 </div>
               </div>
               <div class="carousel-controls">
                 <button class="carousel-btn" type="button" data-prev aria-label="Previous video">◀</button>
-                <span class="carousel-meta" data-meta>1 / 2</span>
+                <span class="carousel-meta" data-meta>1 / 1</span>
                 <button class="carousel-btn" type="button" data-next aria-label="Next video">▶</button>
               </div>
             </div>
@@ -620,6 +641,110 @@
               <div class="carousel-controls">
                 <button class="carousel-btn" type="button" data-prev aria-label="Previous video">◀</button>
                 <span class="carousel-meta" data-meta>1 / 2</span>
+                <button class="carousel-btn" type="button" data-next aria-label="Next video">▶</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="usecase-card">
+            <div class="usecase-head">
+              <h3 class="usecase-title">Box Pick</h3>
+              <p class="usecase-desc">
+                <strong>Primary goal:</strong> pick the orange box from above and place it at a different table
+                location. A <strong>vision-guided policy</strong> uses topdown color detection and an 8-phase IK plan
+                (crane → approach → descend → grip → lift → transport → lower → release) from
+                <code>policies/impl/box_pick/box_pick.yaml</code>.
+              </p>
+            </div>
+            <div class="carousel" data-carousel>
+              <div class="carousel-stage">
+                <div class="carousel-slide active" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 1:</span> generated policy with control/physics issue</div>
+                  <video controls preload="metadata">
+                    <source src="./box_pick_rollout_001.mp4" type="video/mp4" />
+                    <source src="./docs/box_pick_rollout_001.mp4" type="video/mp4" />
+                    <a href="./box_pick_rollout_001.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./box_pick_rollout_001.mp4">box_pick_rollout_001.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 2:</span> updated policy after investigation and fix</div>
+                  <video controls preload="metadata">
+                    <source src="./box_pick_rollout_002.mp4" type="video/mp4" />
+                    <source src="./docs/box_pick_rollout_002.mp4" type="video/mp4" />
+                    <a href="./box_pick_rollout_002.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./box_pick_rollout_002.mp4">box_pick_rollout_002.mp4</a></small>
+                </div>
+              </div>
+              <div class="carousel-controls">
+                <button class="carousel-btn" type="button" data-prev aria-label="Previous video">◀</button>
+                <span class="carousel-meta" data-meta>1 / 2</span>
+                <button class="carousel-btn" type="button" data-next aria-label="Next video">▶</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="usecase-card">
+            <div class="usecase-head">
+              <h3 class="usecase-title">Inspection</h3>
+              <p class="usecase-desc">
+                <strong>Primary goal:</strong> hover the gripper tip over detected top-edge segments of a fixed
+                mounting bracket and execute a smooth inspection scan trajectory from
+                <code>policies/impl/inspection/inspection.yaml</code>.
+              </p>
+            </div>
+            <div class="carousel" data-carousel>
+              <div class="carousel-stage">
+                <div class="carousel-slide active" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 1:</span> workpiece is not fixed properly</div>
+                  <video controls preload="metadata">
+                    <source src="./inspection_rollout_001.mp4" type="video/mp4" />
+                    <source src="./docs/inspection_rollout_001.mp4" type="video/mp4" />
+                    <a href="./inspection_rollout_001.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./inspection_rollout_001.mp4">inspection_rollout_001.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 2:</span> robot blocks itself into a folded configuration</div>
+                  <video controls preload="metadata">
+                    <source src="./inspection_rollout_002.mp4" type="video/mp4" />
+                    <source src="./docs/inspection_rollout_002.mp4" type="video/mp4" />
+                    <a href="./inspection_rollout_002.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./inspection_rollout_002.mp4">inspection_rollout_002.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 3:</span> incorrect or blocked movement</div>
+                  <video controls preload="metadata">
+                    <source src="./inspection_rollout_003.mp4" type="video/mp4" />
+                    <source src="./docs/inspection_rollout_003.mp4" type="video/mp4" />
+                    <a href="./inspection_rollout_003.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./inspection_rollout_003.mp4">inspection_rollout_003.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 4:</span> zigzag movement on the top contour</div>
+                  <video controls preload="metadata">
+                    <source src="./inspection_rollout_004.mp4" type="video/mp4" />
+                    <source src="./docs/inspection_rollout_004.mp4" type="video/mp4" />
+                    <a href="./inspection_rollout_004.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./inspection_rollout_004.mp4">inspection_rollout_004.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 5:</span> smooth edge scanning trajectory</div>
+                  <video controls preload="metadata">
+                    <source src="./inspection_rollout_005.mp4" type="video/mp4" />
+                    <source src="./docs/inspection_rollout_005.mp4" type="video/mp4" />
+                    <a href="./inspection_rollout_005.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./inspection_rollout_005.mp4">inspection_rollout_005.mp4</a></small>
+                </div>
+              </div>
+              <div class="carousel-controls">
+                <button class="carousel-btn" type="button" data-prev aria-label="Previous video">◀</button>
+                <span class="carousel-meta" data-meta>1 / 5</span>
                 <button class="carousel-btn" type="button" data-next aria-label="Next video">▶</button>
               </div>
             </div>

@@ -1,0 +1,31 @@
+<mujocoinclude>
+  <!-- Compatibility body for env.reset(): kept dynamic but visually negligible. -->
+  <body name="grasp_box" pos="0.52 0.0 0.035">
+    <freejoint name="grasp_box_free"/>
+    <site name="box_site" type="sphere" size="0.001" rgba="0 0 0 0"/>
+    <inertial pos="0 0 0" mass="1e-5" diaginertia="1e-8 1e-8 1e-8"/>
+    <geom name="box_geom" type="sphere" size="0.001" rgba="0 0 0 0" contype="0" conaffinity="0"/>
+  </body>
+
+  <!-- Inspection part is fixed to world (no joint): does not move/fall under gravity. -->
+  <body name="inspection_part" pos="0.34 -0.06 0.02">
+    <geom
+      name="inspection_bumper_geom"
+      type="mesh"
+      mesh="inspection_bumper_mesh"
+      pos="0.00 -0.10 0.00"
+      rgba="0.73 0.76 0.82 1"
+      friction="0.95 0.01 0.001"
+      condim="3"
+    />
+
+    <!-- Accessible edge points (weld-like scan path anchors). -->
+    <site name="inspection_edge_1" pos="0.050 -0.015 0.200" size="0.005" rgba="0 0 0 0"/>
+    <site name="inspection_edge_2" pos="0.100 0.005 0.205" size="0.005" rgba="0 0 0 0"/>
+    <site name="inspection_edge_3" pos="0.155 0.015 0.212" size="0.005" rgba="0 0 0 0"/>
+    <site name="inspection_edge_4" pos="0.215 0.018 0.218" size="0.005" rgba="0 0 0 0"/>
+    <site name="inspection_edge_5" pos="0.275 0.014 0.214" size="0.005" rgba="0 0 0 0"/>
+    <site name="inspection_edge_6" pos="0.335 0.000 0.206" size="0.005" rgba="0 0 0 0"/>
+    <site name="inspection_edge_7" pos="0.390 -0.020 0.198" size="0.005" rgba="0 0 0 0"/>
+  </body>
+</mujocoinclude>

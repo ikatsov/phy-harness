@@ -1,0 +1,46 @@
+<mujoco model="ur5e_two_finger_inspection_scene">
+  <compiler angle="radian" autolimits="true" strippath="false" boundmass="0.001" boundinertia="0.001"/>
+
+  <option timestep="0.002" integrator="implicitfast" gravity="0 0 -9.81">
+    <flag warmstart="enable"/>
+  </option>
+
+  <visual>
+    <global azimuth="140" elevation="-20"/>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+  </visual>
+
+  <asset>
+    <texture name="grid_tex" type="2d" builtin="checker" width="512" height="512" rgb1="0.25 0.25 0.25" rgb2="0.45 0.45 0.45"/>
+    <material name="grid_mat" texture="grid_tex" texrepeat="8 8" reflectance="0.2"/>
+    <mesh name="inspection_bumper_mesh" file="mounting_bracket.obj" scale="0.003 0.003 0.003"/>
+  </asset>
+
+  <!-- Universal Robots UR5e meshes/collision from MuJoCo Menagerie (vendored under menagerie_ur5e/). -->
+  <include file="menagerie_ur5e/ur5e_robot.xml"/>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" diffuse="0.8 0.8 0.8"/>
+    <light pos="-1 -1 1.2" dir="0.3 0.3 -1" diffuse="0.4 0.4 0.4"/>
+
+    <geom name="floor" type="plane" size="3 3 0.01" material="grid_mat" condim="3"/>
+
+    <camera name="overview" pos="1.6 1.2 1.2" mode="fixed" xyaxes="-0.65 0.76 0 -0.35 -0.30 0.89"/>
+    <camera name="topdown" pos="0 0 2.35" mode="fixed" xyaxes="1 0 0 0 1 0" fovy="48"/>
+    <camera name="side_rgb" pos="-3 0 0.3" mode="fixed" xyaxes="0 -1 0 0 0 1"/>
+    <camera name="front_rgb" pos="0 -3 0.3" mode="fixed" xyaxes="1 0 0 0 0 1"/>
+
+    <!-- SCENE_IMPORTS -->
+  </worldbody>
+
+  <actuator>
+    <position name="a_shoulder_pan" joint="shoulder_pan_joint" kp="8000" kv="320" ctrlrange="-6.28319 6.28319"/>
+    <position name="a_shoulder_lift" joint="shoulder_lift_joint" kp="8000" kv="320" ctrlrange="-6.28319 6.28319"/>
+    <position name="a_elbow" joint="elbow_joint" kp="6000" kv="240" ctrlrange="-3.1415 3.1415"/>
+    <position name="a_wrist_1" joint="wrist_1_joint" kp="4000" kv="160" ctrlrange="-6.28319 6.28319"/>
+    <position name="a_wrist_2" joint="wrist_2_joint" kp="4000" kv="160" ctrlrange="-6.28319 6.28319"/>
+    <position name="a_wrist_3" joint="wrist_3_joint" kp="4000" kv="160" ctrlrange="-6.28319 6.28319"/>
+    <general name="a_gripper" tendon="split" gaintype="fixed" biastype="affine" forcerange="-400 400" ctrlrange="0 255"
+      gainprm="2.0 0 0" biasprm="-300 0 -10"/>
+  </actuator>
+</mujoco>

@@ -1,0 +1,28 @@
+# Task rubric + intent for ``task: inspection``.
+#
+# Goal: follow accessible weld-like edges of a machine part from a small stand-off
+# distance, like optical/laser scanning.
+
+task_spec:
+  inline: |
+    Primary goal: move the gripper tip above accessible machine-part edges and follow
+    them smoothly as if performing optical or laser inspection.
+
+    Scene: a CAD-like machine part mesh is spawned on the table (no orange box in this task).
+    Path: edge anchors are defined by inspection sites on the object
+      (inspection_edge_1..inspection_edge_7).
+    Motion:
+      Phase 1 — approach from episode-start tool pose to the first edge anchor.
+      Phase 2 — follow connected edge anchors at a constant stand-off height
+        (SCAN_STANDOFF_M) above the edge points.
+    Orientation: fixed top-down scan orientation throughout the episode.
+    Gripper: latched at episode-start value (no grasping).
+
+    Fail if the arm collides catastrophically with itself or the environment.
+  policy_module: policies/impl/inspection/inspection.py
+
+scene_files:
+  - src/robot_manipulation_sim/mjcf/ur5e_two_finger_inspection_scene.xml
+  - src/robot_manipulation_sim/mjcf/scene_objects/inspection_part.xml
+
+rgb: false

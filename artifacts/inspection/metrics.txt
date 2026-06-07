@@ -1,0 +1,3 @@
+steps 650
+joint_log_every_steps 1
+final_box_z -828.782470
