@@ -11,7 +11,6 @@ import math
 import mujoco
 import numpy as np
 import pytest
-
 from robot_manipulation_sim.env import default_mjcf_path
 from robot_manipulation_sim.vision.service import (
     Detection,

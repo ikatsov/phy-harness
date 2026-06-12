@@ -470,11 +470,10 @@
         </h1>
         <p>A practical simulation workflow for building and debugging robot manipulation policies with augmented rollout videos, joint logs, VLM transcripts, and task analyzers.</p>
         <div class="pills">
-          <span class="pill">MuJoCo simulation</span>
           <span class="pill">Policy iteration loop</span>
-          <span class="pill">Analyzer-driven debugging</span>
-          <span class="pill">Video + logs + transcripts</span>
-          <span class="pill">IK motion planning</span>
+          <span class="pill">Physics-accurate simulation</span>
+          <span class="pill">Dynamic feedback signal engineering</span>
+          <span class="pill">IK and Vision services</span>
         </div>
       </section>
 
@@ -544,7 +543,7 @@
         <h2>Why this workflow scales</h2>
         <div class="two-col">
           <div class="card">
-            <h3 class="card-title"><span class="card-badge" aria-hidden="true">01</span>Task-level abstractions</h3>
+            <h3 class="card-title"><span class="card-badge" aria-hidden="true">01</span>Solid abstraction layer</h3>
             <ul>
               <li>IK and Vision services hide low-level math, geometry, and camera plumbing</li>
               <li>The development agent can operate at policy/task intent level instead of raw simulator internals</li>
@@ -553,12 +552,12 @@
             </ul>
           </div>
           <div class="card">
-            <h3 class="card-title"><span class="card-badge" aria-hidden="true">02</span>Enriched simulation outputs</h3>
+            <h3 class="card-title"><span class="card-badge" aria-hidden="true">02</span>Rich feedback signal</h3>
             <ul>
               <li><code>rollout.mp4</code> includes 4-view video with kinematic overlays</li>
               <li><code>joints.csv</code> captures target vs applied controls at each step</li>
               <li><code>rollout.vlm_transcript.json</code> adds VLM-generated frame-level descriptions</li>
-              <li>Custom analyzers convert trajectories into structured task diagnostics</li>
+              <li>Custom analyzers are dynamically coded for each task and each iteration, converting trajectories into structured diagnostics</li>
               <li>Together, these artifacts make failure modes explicit and debuggable</li>
             </ul>
           </div>
@@ -745,6 +744,62 @@
               <div class="carousel-controls">
                 <button class="carousel-btn" type="button" data-prev aria-label="Previous video">◀</button>
                 <span class="carousel-meta" data-meta>1 / 5</span>
+                <button class="carousel-btn" type="button" data-next aria-label="Next video">▶</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="usecase-card">
+            <div class="usecase-head">
+              <h3 class="usecase-title">Cable Routing</h3>
+              <p class="usecase-desc">
+                <strong>Primary goal:</strong> precisely grasp the cable tip and route it through sequential peg gates
+                using high-resolution top-camera perception, staged IK motion, and iterative policy validation from
+                <code>policies/impl/cable_routing/cable_routing.yaml</code>.
+              </p>
+            </div>
+            <div class="carousel" data-carousel>
+              <div class="carousel-stage">
+                <div class="carousel-slide active" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 1:</span> initial setup</div>
+                  <video controls preload="metadata">
+                    <source src="./cable_routing_rollout_001.mp4" type="video/mp4" />
+                    <source src="./docs/cable_routing_rollout_001.mp4" type="video/mp4" />
+                    <a href="./cable_routing_rollout_001.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./docs/cable_routing_rollout_001.mp4">cable_routing_rollout_001.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 2:</span> missed grasping</div>
+                  <video controls preload="metadata">
+                    <source src="./cable_routing_rollout_002.mp4" type="video/mp4" />
+                    <source src="./docs/cable_routing_rollout_002.mp4" type="video/mp4" />
+                    <a href="./cable_routing_rollout_002.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./docs/cable_routing_rollout_002.mp4">cable_routing_rollout_002.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 3:</span> grasping strenght issue</div>
+                  <video controls preload="metadata">
+                    <source src="./cable_routing_rollout_003.mp4" type="video/mp4" />
+                    <source src="./docs/cable_routing_rollout_003.mp4" type="video/mp4" />
+                    <a href="./cable_routing_rollout_003.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./docs/cable_routing_rollout_003.mp4">cable_routing_rollout_003.mp4</a></small>
+                </div>
+                <div class="carousel-slide" data-slide>
+                  <div class="slide-label"><span class="hl">Iteration 4:</span> complete task</div>
+                  <video controls preload="metadata">
+                    <source src="./cable_routing_rollout_004.mp4" type="video/mp4" />
+                    <source src="./docs/cable_routing_rollout_004.mp4" type="video/mp4" />
+                    <a href="./cable_routing_rollout_004.mp4">Download video</a>
+                  </video>
+                  <small class="usecase-file"><a href="./docs/cable_routing_rollout_004.mp4">cable_routing_rollout_004.mp4</a></small>
+                </div>
+              </div>
+              <div class="carousel-controls">
+                <button class="carousel-btn" type="button" data-prev aria-label="Previous video">◀</button>
+                <span class="carousel-meta" data-meta>1 / 4</span>
                 <button class="carousel-btn" type="button" data-next aria-label="Next video">▶</button>
               </div>
             </div>

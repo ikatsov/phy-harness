@@ -1,0 +1,15 @@
+# Task rubric + intent for ``task: cable_routing``.
+#
+# Starter scaffold only: scene and policy implementation will be expanded next.
+
+task_spec:
+  inline: |
+    Primary goal: pick a cable end and route it through sequential peg pairs.
+    This task will use vision for cable-end and peg localization.
+    Detailed phases, success criteria, and analyzers will be added in follow-up steps.
+  policy_module: policies/impl/cable_routing/cable_routing.py
+
+scene_files:
+  - src/robot_manipulation_sim/mjcf/ur5e_two_finger_scene_cable_routing.xml
+
+rgb: true

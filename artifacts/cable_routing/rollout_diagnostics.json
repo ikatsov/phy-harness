@@ -1,0 +1,79 @@
+{
+  "analyzer": "rollout_diagnostics",
+  "joints_csv": "/Users/ikatsov/PROJECTS/robotics-devagent/artifacts/cable_routing/joints.csv",
+  "debug_log": "/Users/ikatsov/PROJECTS/robotics-devagent/artifacts/cable_routing/policy_debug.jsonl",
+  "rows": 651,
+  "first_target_motion_step": 75,
+  "first_target_motion_time_sec": 1.5,
+  "max_step_delta_rad": 0.98793,
+  "gripper_target_min": 0.0,
+  "gripper_target_max": 255.0,
+  "event_counts": {
+    "episode_start": 1,
+    "perception_buffering": 2,
+    "perception_stable": 1,
+    "plan_built": 1,
+    "plan_start": 1,
+    "peg_prelatch_guard": 99,
+    "peg_hole_status": 76,
+    "peg_hole_pair_latched": 1,
+    "route_clearance": 29,
+    "peg_hole_recenter_hold": 65
+  },
+  "pick_validation": {
+    "ok": true,
+    "close_step": 261,
+    "peak_z_after_close": 0.19608,
+    "hold_run_steps": 287,
+    "thresholds": {
+      "close_cmd_min": 150.0,
+      "lift_peak_min_z": 0.12,
+      "lift_hold_min_z": 0.09,
+      "lift_hold_min_steps": 25
+    }
+  },
+  "gate_validations": [
+    {
+      "peg": "peg_cyan",
+      "ok": true,
+      "nearest_step": 429,
+      "min_dist": 0.013059195993628377,
+      "align_dot": 0.938150820849491,
+      "normal": [
+        -0.9247676948967826,
+        0.38053214118559187
+      ]
+    },
+    {
+      "peg": "peg_magenta",
+      "ok": true,
+      "nearest_step": 496,
+      "min_dist": 0.01564078003169917,
+      "align_dot": 0.5758690604488685,
+      "normal": [
+        0.4678877204190326,
+        0.8837879163470618
+      ]
+    },
+    {
+      "peg": "peg_yellow",
+      "ok": true,
+      "nearest_step": 630,
+      "min_dist": 0.016028605678598522,
+      "align_dot": 0.9974208700627599,
+      "normal": [
+        0.31622776601683766,
+        0.948683298050514
+      ]
+    }
+  ],
+  "peg_hole_validation": {
+    "ok": true,
+    "samples": 76,
+    "max_consecutive_dual_peg_latch": 45,
+    "thresholds": {
+      "min_consecutive": 3,
+      "close_cmd_min": 180.0
+    }
+  }
+}

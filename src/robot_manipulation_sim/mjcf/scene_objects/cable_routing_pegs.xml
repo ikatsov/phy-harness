@@ -1,0 +1,28 @@
+<mujocoinclude>
+  <!-- Compatibility body expected by env.reset(); hidden and physically negligible. -->
+  <body name="grasp_box" pos="0.52 0.0 0.035">
+    <freejoint name="grasp_box_free"/>
+    <site name="box_site" type="sphere" size="0.001" rgba="0 0 0 0"/>
+    <inertial pos="0 0 0" mass="1e-5" diaginertia="1e-8 1e-8 1e-8"/>
+    <geom name="box_geom" type="sphere" size="0.001" rgba="0 0 0 0" contype="0" conaffinity="0"/>
+  </body>
+
+  <!-- Three fixed peg pairs on an arc for crane-pose accessibility. -->
+  <body name="peg_pair_1" pos="0.40 -0.24 0.0">
+    <geom name="peg_1a" type="cylinder" pos="-0.036 0.0 0.080" size="0.014 0.080" rgba="0.05 0.85 1.00 1"/>
+    <geom name="peg_1b" type="cylinder" pos="0.036 0.0 0.080" size="0.014 0.080" rgba="0.05 0.85 1.00 1"/>
+    <site name="peg_pair_1_center" pos="0 0 0.140" size="0.004" rgba="0 0 0 0"/>
+  </body>
+
+  <body name="peg_pair_2" pos="0.52 -0.08 0.0">
+    <geom name="peg_2a" type="cylinder" pos="-0.036 0.0 0.080" size="0.014 0.080" rgba="0.95 0.35 0.95 1"/>
+    <geom name="peg_2b" type="cylinder" pos="0.036 0.0 0.080" size="0.014 0.080" rgba="0.95 0.35 0.95 1"/>
+    <site name="peg_pair_2_center" pos="0 0 0.140" size="0.004" rgba="0 0 0 0"/>
+  </body>
+
+  <body name="peg_pair_3" pos="0.58 0.10 0.0">
+    <geom name="peg_3a" type="cylinder" pos="-0.036 0.0 0.080" size="0.014 0.080" rgba="1.00 0.92 0.20 1"/>
+    <geom name="peg_3b" type="cylinder" pos="0.036 0.0 0.080" size="0.014 0.080" rgba="1.00 0.92 0.20 1"/>
+    <site name="peg_pair_3_center" pos="0 0 0.140" size="0.004" rgba="0 0 0 0"/>
+  </body>
+</mujocoinclude>

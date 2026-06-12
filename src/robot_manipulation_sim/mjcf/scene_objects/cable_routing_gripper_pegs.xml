@@ -1,0 +1,18 @@
+<mujocoinclude>
+  <!-- Policy-specific latch pegs, welded to gripper pads (kept out of generic UR5e model). -->
+  <body name="left_pad_latch_peg_body" pos="-0.73869663 -0.37417895 0.06305" quat="0.49999049 0.49999049 0.50000951 0.50000951">
+    <freejoint name="left_pad_latch_peg_free"/>
+    <geom name="left_pad_latch_peg" type="cylinder" size="0.0042 0.0045" mass="0.0009"
+      friction="1.8 0.18 0.03" solimp="0.96 0.995 0.0005" solref="0.003 1"
+      rgba="0.70 0.70 0.70 1"/>
+    <site name="left_pad_contact_site" size="0.0015" rgba="1 0 0 0.2"/>
+  </body>
+
+  <body name="right_pad_latch_peg_body" pos="-0.6553024 -0.3741793 0.06295" quat="0.5 -0.5 -0.5 0.5">
+    <freejoint name="right_pad_latch_peg_free"/>
+    <geom name="right_pad_latch_peg" type="cylinder" size="0.0042 0.0045" mass="0.0009"
+      friction="1.8 0.18 0.03" solimp="0.96 0.995 0.0005" solref="0.003 1"
+      rgba="0.70 0.70 0.70 1"/>
+    <site name="right_pad_contact_site" size="0.0015" rgba="0 0 1 0.2"/>
+  </body>
+</mujocoinclude>

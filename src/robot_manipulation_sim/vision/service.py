@@ -38,6 +38,24 @@ class Detection:
         return max(0.0, w) * max(0.0, h)
 
 
+@dataclass(frozen=True)
+class ColorRange:
+    """HSV range in OpenCV scaling: H in [0,180], S/V in [0,255]."""
+
+    lower: NDArray[np.float64]
+    upper: NDArray[np.float64]
+
+
+@dataclass(frozen=True)
+class ColorDetectionOperation:
+    """Well-defined color detection operation."""
+
+    label: str
+    ranges: tuple[ColorRange, ...]
+    min_area_px: int = 40
+    select_largest: bool = True
+
+
 class VisionService:
     """Detect by color and unproject pixels using one camera."""
 
@@ -92,6 +110,26 @@ class VisionService:
 
         return _mask_to_detections(mask, label="color", min_area=min_area)
 
+    def detect_with_operation(
+        self,
+        image: NDArray[np.uint8],
+        operation: ColorDetectionOperation,
+    ) -> list[Detection]:
+        """Run one named color operation and return detections sorted by area."""
+        all_dets: list[Detection] = []
+        for r in operation.ranges:
+            dets = self.detect_by_color(image, r.lower, r.upper, min_area=operation.min_area_px)
+            for d in dets:
+                all_dets.append(
+                    Detection(
+                        label=operation.label,
+                        confidence=d.confidence,
+                        bbox_xyxy=np.asarray(d.bbox_xyxy, dtype=np.float64).copy(),
+                    )
+                )
+        all_dets.sort(key=lambda d: d.area, reverse=True)
+        return all_dets
+
     def unproject_pixel_to_world(
         self,
         data: mujoco.MjData,
@@ -102,7 +140,6 @@ class VisionService:
         return unproject_pixel_to_world(
             self.model, data, self.camera_name, self.width, self.height, pixel_uv, target_z
         )
-
 
 def unproject_pixel_to_world(
     model: mujoco.MjModel,
